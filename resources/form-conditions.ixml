@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ixml SYSTEM "http://www.ixmldev.com/schema/ixml.dtd">
+<ixml>
+
+<if value1="$APPSETTINGS.showForm" value2="1" func="!=">
+	<exit />
+</if>
+
+<include id=".lib" />
+
+<set var="lang">$LANGUAGE.Localizer.lang</set>
+
+<hbox>
+	<vbox width="33%">
+		<listbox id="paymentmethod" label="$L(conditions.method)" width="300">
+			<foreach var="APPSETTINGS[$UMI].paymentmethods[$lang]" var_key="key" var_value="caption">
+				<listitem caption="$caption">$key</listitem>
+			</foreach>
+		</listbox>
+		<if value1="$showRef" value2="1">
+			<textbox id="partnerAgent" label="$L(field.client_agent)" width="300"></textbox>
+		</if>
+	</vbox>
+	<vbox width="34%">
+		<listbox id="paymentconditions" label="$L(conditions.payment)" width="300">
+			<foreach var="APPSETTINGS[$UMI].paymentconditions[$lang]" var_key="key" var_value="caption">
+				<listitem caption="$caption">$key</listitem>
+			</foreach>
+		</listbox>
+		<if value1="$showRef" value2="1">
+			<textbox id="partnerReference" label="$L(field.client_ref)" width="300"></textbox>
+		</if>
+	</vbox>
+	<vbox width="33%">
+		<listbox id="deliveryconditions" label="$L(conditions.delivery)" width="300">
+			<foreach var="APPSETTINGS[$UMI].deliveryconditions[$lang]" var_key="key" var_value="caption">
+				<listitem caption="$caption">$key</listitem>
+			</foreach>
+		</listbox>
+		<if value1="$showRef" value2="1">
+			<textbox id="partnerDate" label="$L(field.client_date)" width="300" type="date"></textbox>
+		</if>
+	</vbox>
+</hbox>
+
+</ixml>

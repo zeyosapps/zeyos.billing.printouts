@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ixml SYSTEM "http://www.ixmldev.com/schema/ixml.dtd">
+<ixml>
+
+<class var="return">
+	<extends class="Template" />
+	
+	<property name="columns">
+	{
+		"itemnum": {
+			"width": 20,
+			"label": "bahak"
+		}
+	}
+	</property>
+	
+	<constructor>
+		<set var="this.widthColSumTotal">$($this.widthCol0 + $this.widthCol1 + $this.widthCol2 + $this.widthCol3)</set>
+		<set var="this.widthTotal">$($this.widthColSumTotal + $this.widthCol4 + $this.widthCol5 + $this.widthCol6 + $this.widthCol7)</set>
+				
+		<array var="this.printOptions">
+			<array key="blank">
+				<item key="type">checkbox</item>
+				<item key="label">$L(dialog.printblank)</item>
+			</array>
+		</array>
+	</constructor>
+	
+
+</class>
+
+</ixml>

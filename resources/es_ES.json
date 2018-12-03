@@ -1,0 +1,218 @@
+{
+    "address": {
+        "delivery": "Direcci\u00f3n de entrega",
+        "invoice": "Direcci\u00f3n de facturaci\u00f3n "
+    },
+    "amount": {
+        "amount": "Cantidad",
+        "balance": "Saldo",
+        "discount": "Descuento ",
+        "dunning": "Tarifa de reclamaci\u00f3n",
+        "netamount": "Importe neto",
+        "netdiscount": {
+            "excluding": "Total neto (excluido descuento)",
+            "including": "Total neto (incluido descuento)"
+        },
+        "nettotal": "Total neto ",
+        "paid": "Importe pagado",
+        "payable": "Importe a pagar",
+        "subtotal": "Subtotal",
+        "tax": {
+            "addon": "+ IVA {taxrate} %",
+            "base": "Base imponible",
+            "onamount": "+ IVA {taxrate} % de {amount}",
+            "vat": "IVA"
+        },
+        "total": "Total"
+    },
+    "bank": {
+        "account": "N\u00fam. de cuenta",
+        "bank": "Banco",
+        "bankcode": "C\u00f3digo bancario",
+        "bic": "BIC",
+        "debit": "El importe del pago le ser\u00e1 cobrado por la siguiente cuenta bancaria ",
+        "details": "Banco corresponsal",
+        "iban": "IBAN",
+        "subject": "Asunto",
+        "transfer": "Por favor transfiera el importe del pago a nuestro banco corresponsal"
+    },
+    "conditions": {
+        "currency": "Todos los precios est\u00e1n expresados en {currency}",
+        "delivery": "Condiciones de entrega",
+        "method": "M\u00e9todo de pago ",
+        "payment": "Condiciones de pago",
+        "shipping": null
+    },
+    "date": {
+        "full": "d.m.Y",
+        "short": "m-d"
+    },
+    "dialog": {
+        "attach": "Guardar PDF",
+        "email": "Enviar v\u00eda e-mail",
+        "email_template": "Plantilla de E-mail",
+        "hidegross": null,
+        "hidesubtotals": "Ocultar subtotales ",
+        "hidetotal": "Ocultar totales",
+        "print": "Generar PDF",
+        "printblank": "Imprimir en blanco ",
+        "printout": "Impreso",
+        "showdiscounts": null,
+        "template": {
+            "confirm": "\u00bfEsta seguro que desea eliminar la plantilla \"{name}\"?",
+            "default": "Establecer como predeterminado",
+            "insert": "Insertar plantilla",
+            "remove": "Eliminar plantilla ",
+            "save": "Guardar como plantilla",
+            "template": "Plantilla "
+        }
+    },
+    "dunning": {
+        "list": {
+            "date": null,
+            "duedate": null,
+            "invoicenum": null
+        },
+        "title": {
+            "dunning1": {
+                "name": null
+            },
+            "dunning2": {
+                "name": null
+            },
+            "dunning3": {
+                "name": "Carta de cobro"
+            },
+            "reminder": {
+                "name": "Aviso de pago ",
+                "no": "N\u00fam. de referencia ",
+                "number": "N\u00fam. de referencia"
+            }
+        }
+    },
+    "extdataname": {
+        "customer_conditions": "Condiciones de pago y env\u00edo ",
+        "supplier_conditions": "Condiciones de pago y env\u00edo"
+    },
+    "field": {
+        "agent": "Agente",
+        "client_agent": "Cliente agente",
+        "client_date": "Fecha de refer\u00e9ncia cliente",
+        "client_ref": "N\u00fam. de refer\u00e9ncia cliente",
+        "customervatid": "CIF \/ NIF",
+        "date": "Fecha",
+        "docdate": "Fecha ",
+        "due": "Vencimiento",
+        "duedate": "Fecha de vencimiento",
+        "page": "P\u00e1gina",
+        "pages": "P\u00e1ginas",
+        "refdate": null,
+        "registerid": null,
+        "suppliervatid": "CIF proveedor",
+        "taxcode": "N\u00fam. de impuesto",
+        "vatid": "CIF \/ NIF",
+        "youragent": null,
+        "yourtransnum": null,
+        "yourvatid": null
+    },
+    "item": {
+        "amount": "Cantidad",
+        "description": "Descripci\u00f3n",
+        "discount": "Descuento ",
+        "item": "Art\u00edculo",
+        "itemnum": "N\u00fam. de Art\u00edculo ",
+        "items": "Art\u00edculos ",
+        "manufacturer": "Fabricante",
+        "name": "Nombre",
+        "original": "Seg\u00fan albar\u00e1n de entrega {deliverynum} ({date})",
+        "pos": "#",
+        "price": "Precio\/Unidad",
+        "priceperunit": "Precio por unidad",
+        "tax": "IVA",
+        "total": "Total",
+        "unit": "unidad"
+    },
+    "number": {
+        "decpoint": ",",
+        "separator": "."
+    },
+    "partner": {
+        "customer": {
+            "name": "Cliente",
+            "no": "N\u00fam. de cliente",
+            "number": "N\u00famero de cliente"
+        },
+        "supplier": {
+            "name": "Proveedor",
+            "no": "N\u00fam. de proveedor",
+            "number": "N\u00famero de proveedor"
+        }
+    },
+    "type": {
+        "credit": {
+            "name": "Factura rectificativa",
+            "no": "N\u00fam. Abono",
+            "number": "N\u00fam. Abono"
+        },
+        "delivery": {
+            "name": "Albar\u00e1n",
+            "no": "N\u00fam. de albar\u00e1n",
+            "number": "N\u00fam. de albar\u00e1n"
+        },
+        "dunning": {
+            "name": "Aviso de pago ",
+            "no": "N\u00fam. de aviso",
+            "number": "N\u00famero de aviso"
+        },
+        "invoice": {
+            "name": "Factura",
+            "no": "N\u00fam. factura ",
+            "number": "N\u00fam. de factura"
+        },
+        "order": {
+            "name": "Pedido",
+            "no": "N\u00fam. de pedido",
+            "number": "N\u00fam. de pedido"
+        },
+        "pinvoice": {
+            "name": "Factura pro-forma",
+            "no": "N\u00fam. factura pro-forma",
+            "number": "N\u00fam. de factura pro-forma"
+        },
+        "quote": {
+            "name": "Presupuesto",
+            "no": "Presupuesto n\u00ba",
+            "number": "Presupuesto n\u00ba"
+        },
+        "scredit": {
+            "name": "Fra. rectificativa de compra",
+            "no": "N\u00fam. Abono",
+            "number": "N\u00fam. Abono"
+        },
+        "sdelivery": {
+            "name": "Entrega de compra ",
+            "no": "N\u00fam. de albar\u00e1n",
+            "number": "N\u00fam. albar\u00e1n de compra "
+        },
+        "sinvoice": {
+            "name": "Factura de compra",
+            "no": "N\u00fam. factura de compra ",
+            "number": "N\u00fam. factura de compra "
+        },
+        "sorder": {
+            "name": "Pedido de compra",
+            "no": "N\u00fam. de pedido",
+            "number": "N\u00fam. de pedido"
+        },
+        "srequest": {
+            "name": "Solicitud",
+            "no": "N\u00fam. de solicitud",
+            "number": "N\u00fam. de solicitud"
+        }
+    },
+    "webletname": {
+        "dialog-billing": "Imprimir en PDF",
+        "dialog-collection": "Imprimir en PDF",
+        "dialog-procurement": "Imprimir en PDF"
+    }
+}

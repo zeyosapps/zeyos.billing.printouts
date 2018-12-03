@@ -1,0 +1,150 @@
+{
+  "services": {
+    "update_templates": {
+      "name": "Transfer Templates to Objects",
+      "type": null,
+      "entity": "",
+      "schedule": 0,
+      "interval": 1,
+      "url": "",
+      "mimetype": "application/ixml+xml"
+    },
+    "print": {
+      "name": "Transaction Print-Out",
+      "type": "remotecall",
+      "entity": "",
+      "schedule": 0,
+      "interval": 1,
+      "url": "",
+      "mimetype": "application/ixml+xml"
+    }
+  },
+  "resources": {
+    "controller": {
+      "name": "Print-out controller",
+      "mimetype": "application/javascript"
+    },
+    "dialog-html": {
+      "name": "PDF Template - Print-Out Dialog (HTML)",
+      "mimetype": "application/ixml+xml"
+    },
+    "form-conditions": {
+      "name": "Delivery Conditions",
+      "mimetype": "application/ixml+xml"
+    },
+    "lib": {
+      "name": "PDF Template - Library Functions",
+      "mimetype": "application/ixml+xml"
+    },
+    "template": {
+      "name": "Print Template Frame",
+      "mimetype": "application/ixml+xml"
+    },
+    "template-billing-deliveries": {
+      "name": "Template - Delivery Note (Billing)",
+      "mimetype": "application/ixml+xml"
+    },
+    "template-dunning": {
+      "name": "Print Template Frame - Dunning",
+      "mimetype": "application/ixml+xml"
+    },
+    "de_DE": {
+      "name": "Print-Template - Language de_DE",
+      "mimetype": "application/json"
+    },
+    "en_US": {
+      "name": "Print-Template - Language en_US",
+      "mimetype": "application/json"
+    },
+    "es_ES": {
+      "name": "locale-es_ES",
+      "mimetype": "application/json"
+    }
+  },
+  "weblets": {
+    "billing_masterdata": {
+      "name": "Billing Masterdata",
+      "view": "billing.details_transaction.masterdata.form",
+      "type": "embedded_collapsed",
+      "width": 0,
+      "height": 0,
+      "url": "",
+      "svgpath": "",
+      "color": "",
+      "mimetype": "application/ixml+xml",
+      "langaliases": "{}"
+    },
+    "customer_conditions": {
+      "name": "Delivery Conditions - Customers",
+      "view": "accounts.details_account.details.form#CUSTOMER_EXISTS",
+      "type": "embedded_collapsed",
+      "width": 0,
+      "height": 0,
+      "url": "",
+      "svgpath": "",
+      "color": "",
+      "mimetype": "application/ixml+xml",
+      "langaliases": "{\"en_US\":\"Payment and delivery conditions\",\"es_ES\":\"Condiciones de pago y env\\u00edo \",\"de_DE\":\"Zahlungs- und Lieferbedingungen\"}"
+    },
+    "dialog-billing": {
+      "name": "PDF Template - Print-Out Dialog (Billing)",
+      "view": "billing.details_transaction#EXISTS",
+      "type": "popup_plain",
+      "width": 800,
+      "height": 600,
+      "url": "",
+      "svgpath": "",
+      "color": "",
+      "mimetype": "application/ixml+xml",
+      "langaliases": "{\"en_US\":\"Print to PDF\",\"es_ES\":\"Imprimir en PDF\",\"de_DE\":\"PDF drucken\"}"
+    },
+    "dialog-collection": {
+      "name": "PDF Template - Print-Out Dialog (Dunning)",
+      "view": "collection.details_dunning#EXISTS",
+      "type": "popup_plain",
+      "width": 800,
+      "height": 600,
+      "url": "",
+      "svgpath": "",
+      "color": "",
+      "mimetype": "application/ixml+xml",
+      "langaliases": "{\"en_US\":\"Print to PDF\",\"es_ES\":\"Imprimir en PDF\",\"de_DE\":\"PDF drucken\"}"
+    },
+    "dialog-procurement": {
+      "name": "PDF Template - Print-Out Dialog (Billing)",
+      "view": "procurement.details_transaction#EXISTS",
+      "type": "popup_plain",
+      "width": 800,
+      "height": 600,
+      "url": "",
+      "svgpath": "",
+      "color": "",
+      "mimetype": "application/ixml+xml",
+      "langaliases": "{\"en_US\":\"Print to PDF\",\"es_ES\":\"Imprimir en PDF\",\"de_DE\":\"PDF drucken\"}"
+    },
+    "procurement_masterdata": {
+      "name": "Procurement Masterdata",
+      "view": "procurement.details_transaction.masterdata.form",
+      "type": "embedded_collapsed",
+      "width": 0,
+      "height": 0,
+      "url": "",
+      "svgpath": "",
+      "color": "",
+      "mimetype": "application/ixml+xml",
+      "langaliases": "{}"
+    },
+    "supplier_conditions": {
+      "name": "Delivery Conditions - Supplier",
+      "view": "accounts.details_account.details.form#SUPPLIER_EXISTS",
+      "type": "embedded_collapsed",
+      "width": 0,
+      "height": 0,
+      "url": "",
+      "svgpath": "",
+      "color": "",
+      "mimetype": "application/ixml+xml",
+      "langaliases": "{\"en_US\":\"Payment and delivery conditions\",\"es_ES\":\"Condiciones de pago y env\\u00edo\",\"de_DE\":\"Zahlungs- und Lieferbedingungen\"}"
+    }
+  }
+}

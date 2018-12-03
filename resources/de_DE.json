@@ -1,0 +1,218 @@
+{
+    "address": {
+        "delivery": "Lieferanschrift",
+        "invoice": "Rechnungsanschrift"
+    },
+    "amount": {
+        "amount": "Betrag",
+        "balance": "Saldo",
+        "discount": "Abgezogener Rabatt",
+        "dunning": "Mahngeb\u00fchren",
+        "netamount": "Nettobetrag",
+        "netdiscount": {
+            "excluding": "Gesamtbetrag netto (exkl. Rabatt)",
+            "including": "Gesamtbetrag netto (inkl. Rabatt)"
+        },
+        "nettotal": "Gesamtbetrag netto",
+        "paid": "Bezahlt",
+        "payable": "Zahlungsbetrag",
+        "subtotal": "Zwischensumme",
+        "tax": {
+            "addon": "zzgl. {taxrate} % MwSt.",
+            "base": "Steuerbasisbetrag",
+            "onamount": "zzgl. {taxrate} % MwSt. auf {amount}",
+            "vat": "MwSt."
+        },
+        "total": "Gesamtbetrag"
+    },
+    "bank": {
+        "account": "Kontonr.",
+        "bank": "Bank",
+        "bankcode": "BLZ",
+        "bic": "BIC",
+        "debit": "Wir werden den Rechnungsbetrag von folgendem Konto abbuchen",
+        "details": "Bankverbindung",
+        "iban": "IBAN",
+        "subject": "\u00dcberweisungstext",
+        "transfer": "Bitte \u00fcberweisen Sie den vollst\u00e4ndigen Zahlungsbetrag auf nachfolgendes Konto"
+    },
+    "conditions": {
+        "currency": "Alle Preise verstehen sich in {currency}",
+        "delivery": "Lieferkonditionen",
+        "method": "Zahlungsweise",
+        "payment": "Zahlungskonditionen",
+        "shipping": "Versand"
+    },
+    "date": {
+        "full": "d.m.Y",
+        "short": "d.m."
+    },
+    "dialog": {
+        "attach": "PDF speichern",
+        "email": "Als E-Mail senden",
+        "email_template": "E-Mail-Vorlage",
+        "hidegross": "Steuerbetrag ausblenden",
+        "hidesubtotals": "Title-Zwischensummen ausblenden",
+        "hidetotal": "Summen ausblenden",
+        "print": "PDF drucken",
+        "printblank": "Blankodruck",
+        "printout": "Ausdruck",
+        "showdiscounts": "Rabatte anzeigen",
+        "template": {
+            "confirm": "Wollen Sie die Vorlage \"{name}\" wirklick l\u00f6schen?",
+            "default": "Als Standard setzen",
+            "insert": "Vorlage einf\u00fcgen",
+            "remove": "Vorlage l\u00f6schen",
+            "save": "Als Vorlage speichern",
+            "template": "Vorlage"
+        }
+    },
+    "dunning": {
+        "list": {
+            "date": "Rechnungsdatum",
+            "duedate": "F\u00e4lligkeitsdatum",
+            "invoicenum": "Rechnungsnr."
+        },
+        "title": {
+            "dunning1": {
+                "name": "1. Mahnung"
+            },
+            "dunning2": {
+                "name": "2. Mahnung"
+            },
+            "dunning3": {
+                "name": "3. Mahnung"
+            },
+            "reminder": {
+                "name": "Erinnerung",
+                "no": "Vorgangsnr.",
+                "number": "Erinnerung Nr."
+            }
+        }
+    },
+    "extdataname": {
+        "customer_conditions": "Zahlungs- und Lieferbedingungen",
+        "supplier_conditions": "Zahlungs- und Lieferbedingungen"
+    },
+    "field": {
+        "agent": "Bearbeiter",
+        "client_agent": "Bearbeiter (Kunde)",
+        "client_date": "Vorgangsdatum (Kunde)",
+        "client_ref": "Refenz (Kunde)",
+        "customervatid": "USt.-ID (Kunde)",
+        "date": "Datum",
+        "docdate": "Datum",
+        "due": "F\u00e4lligkeit",
+        "duedate": "F\u00e4lligkeitsdatum",
+        "page": "Seite",
+        "pages": "Seiten",
+        "refdate": "Vorgangsdatum",
+        "registerid": "Handelsregister Nr.",
+        "suppliervatid": "USt.-ID (Lieferant)",
+        "taxcode": "Steuernummer",
+        "vatid": "USt.-ID",
+        "youragent": "Ihr Bearbeiter",
+        "yourtransnum": "Ihre Vorgangsnummer",
+        "yourvatid": "Ihre USt.-ID"
+    },
+    "item": {
+        "amount": "Menge",
+        "description": "Beschreibung",
+        "discount": "Rabatt",
+        "item": "Artikel",
+        "itemnum": "Art.-Nr.",
+        "items": "Artikel",
+        "manufacturer": "Hersteller",
+        "name": "Name",
+        "original": "Gem\u00e4\u00df Lieferschein {deliverynum} vom {date}",
+        "pos": "Pos.",
+        "price": "Einzelpreis",
+        "priceperunit": "Preis pro Einheit",
+        "tax": "MwSt.",
+        "total": "Gesamt",
+        "unit": "Einheit"
+    },
+    "number": {
+        "decpoint": ",",
+        "separator": "."
+    },
+    "partner": {
+        "customer": {
+            "name": "Kunde",
+            "no": "Kundennr.",
+            "number": "Kundennummer"
+        },
+        "supplier": {
+            "name": "Lieferant",
+            "no": "Lieferantennr.",
+            "number": "Lieferantennummer"
+        }
+    },
+    "type": {
+        "credit": {
+            "name": "Gutschrift",
+            "no": "Gutschriftnr.",
+            "number": "Gutschriftsnummer"
+        },
+        "delivery": {
+            "name": "Lieferschein",
+            "no": "Lieferscheinnr.",
+            "number": "Lieferscheinnummer"
+        },
+        "dunning": {
+            "name": "Mahnung",
+            "no": "Mahnungsnr.",
+            "number": "Mahnungsnummer"
+        },
+        "invoice": {
+            "name": "Rechnung",
+            "no": "Rechnungsnr.",
+            "number": "Rechnungsnummer"
+        },
+        "order": {
+            "name": "Auftrag",
+            "no": "Auftragsnr.",
+            "number": "Auftragsnummer"
+        },
+        "pinvoice": {
+            "name": "Proformarechnung",
+            "no": "Vorgangsnr.",
+            "number": "Vorgangsnummer"
+        },
+        "quote": {
+            "name": "Angebot",
+            "no": "Angebotsnr.",
+            "number": "Angebotsnummer"
+        },
+        "scredit": {
+            "name": "Lieferantengutschrift",
+            "no": "Gutschriftnr.",
+            "number": "Gutschriftsnummer"
+        },
+        "sdelivery": {
+            "name": "Eingangslieferung",
+            "no": "Lieferscheinnr.",
+            "number": "Lieferscheinnummer"
+        },
+        "sinvoice": {
+            "name": "Eingangsrechnung",
+            "no": "Rechnungsnr.",
+            "number": "Rechnungsnummer"
+        },
+        "sorder": {
+            "name": "Bestellung",
+            "no": "Bestellnr.",
+            "number": "Bestellnummer"
+        },
+        "srequest": {
+            "name": "Anfrage",
+            "no": "Anfrage Nr.",
+            "number": "Anfrage Nummer"
+        }
+    },
+    "webletname": {
+        "dialog-billing": "PDF drucken",
+        "dialog-collection": "PDF drucken",
+        "dialog-procurement": "PDF drucken"
+    }
+}

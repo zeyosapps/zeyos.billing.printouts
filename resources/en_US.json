@@ -1,0 +1,218 @@
+{
+    "address": {
+        "delivery": "Delivery address",
+        "invoice": "Invoice address"
+    },
+    "amount": {
+        "amount": "Amount",
+        "balance": "Balance",
+        "discount": "Discount",
+        "dunning": "Dunning fees",
+        "netamount": "Net amount",
+        "netdiscount": {
+            "excluding": "Net total (excl. discount)",
+            "including": "Net total (incl. discount)"
+        },
+        "nettotal": "Net total",
+        "paid": "Paid amount",
+        "payable": "Payment amount",
+        "subtotal": "Subtotal",
+        "tax": {
+            "addon": "plus {taxrate} % VAT",
+            "base": "Tax base amount",
+            "onamount": "plus {taxrate} % VAT on {amount}",
+            "vat": "VAT"
+        },
+        "total": "Total"
+    },
+    "bank": {
+        "account": "Account no.",
+        "bank": "Bank name",
+        "bankcode": "Bank code",
+        "bic": "BIC",
+        "debit": "We will debit the payment amount with the following bank account",
+        "details": "Correspondent bank",
+        "iban": "IBAN",
+        "subject": "Subject",
+        "transfer": "Please transfer the payment amount to our correspondent bank"
+    },
+    "conditions": {
+        "currency": "All prices are quoted in {currency}",
+        "delivery": "Delivery conditions",
+        "method": "Payment method",
+        "payment": "Payment conditions",
+        "shipping": "Shipping"
+    },
+    "date": {
+        "full": "Y-m-d",
+        "short": "m-d"
+    },
+    "dialog": {
+        "attach": "Store PDF",
+        "email": "Send via e-mail",
+        "email_template": "E-mail template",
+        "hidegross": "Hide tax amount",
+        "hidesubtotals": "Hide subtotals",
+        "hidetotal": "Hide totals",
+        "print": "Generate PDF",
+        "printblank": "Print blank",
+        "printout": "Printout",
+        "showdiscounts": "Show discounts",
+        "template": {
+            "confirm": "Do you really want to remove the template \"{name}\"?",
+            "default": "Set as default",
+            "insert": "Insert template",
+            "remove": "Delete template",
+            "save": "Save as template",
+            "template": "Template"
+        }
+    },
+    "dunning": {
+        "list": {
+            "date": "Rechnungsdatum",
+            "duedate": "F\u00e4lligkeitsdatum",
+            "invoicenum": "Rechnungsnr."
+        },
+        "title": {
+            "dunning1": {
+                "name": "1. Mahnung"
+            },
+            "dunning2": {
+                "name": "2. Mahnung"
+            },
+            "dunning3": {
+                "name": "Pre-collection letter"
+            },
+            "reminder": {
+                "name": "Payment reminder",
+                "no": "Reference no",
+                "number": "Reference number"
+            }
+        }
+    },
+    "extdataname": {
+        "customer_conditions": "Payment and delivery conditions",
+        "supplier_conditions": "Payment and delivery conditions"
+    },
+    "field": {
+        "agent": "Agent",
+        "client_agent": "Customer agent",
+        "client_date": "Customer ref. date",
+        "client_ref": "Customer ref. no.",
+        "customervatid": "Customer VAT ID",
+        "date": "Date",
+        "docdate": "Document date",
+        "due": "Due",
+        "duedate": "Due date",
+        "page": "Page",
+        "pages": "Pages",
+        "refdate": "Transaction date",
+        "registerid": "Trade register no.",
+        "suppliervatid": "Supplier VAT ID",
+        "taxcode": "Tax no.",
+        "vatid": "VAT ID",
+        "youragent": "Your agent",
+        "yourtransnum": "Your transaction no.",
+        "yourvatid": "Your VAT ID"
+    },
+    "item": {
+        "amount": "Amount",
+        "description": "Description",
+        "discount": "Discount",
+        "item": "Item",
+        "itemnum": "Item no.",
+        "items": "Items",
+        "manufacturer": "Manufacturer",
+        "name": "Name",
+        "original": "According to delivery note {deliverynum} ({date})",
+        "pos": "#",
+        "price": "Price\/unit",
+        "priceperunit": "Price per unit",
+        "tax": "VAT",
+        "total": "Total",
+        "unit": "unit"
+    },
+    "number": {
+        "decpoint": ".",
+        "separator": ","
+    },
+    "partner": {
+        "customer": {
+            "name": "Customer",
+            "no": "Customer no.",
+            "number": "Customer number"
+        },
+        "supplier": {
+            "name": "Supplier",
+            "no": "Supplier no.",
+            "number": "Supplier number"
+        }
+    },
+    "type": {
+        "credit": {
+            "name": "Credit note",
+            "no": "Cretit note no.",
+            "number": "Credit note number"
+        },
+        "delivery": {
+            "name": "Delivery note",
+            "no": "Delivery no.",
+            "number": "Delivery number"
+        },
+        "dunning": {
+            "name": "Payment reminder",
+            "no": "Reminder no.",
+            "number": "Reminder number"
+        },
+        "invoice": {
+            "name": "Invoice",
+            "no": "Invoice no.",
+            "number": "Invoice number"
+        },
+        "order": {
+            "name": "Order",
+            "no": "Order no.",
+            "number": "Order number"
+        },
+        "pinvoice": {
+            "name": "Pro-forma invoice",
+            "no": "PI No.",
+            "number": "PI Number"
+        },
+        "quote": {
+            "name": "Quote",
+            "no": "Quotation no.",
+            "number": "Quotation number"
+        },
+        "scredit": {
+            "name": "Supplier credit",
+            "no": "Cretit note no.",
+            "number": "Cretit note number"
+        },
+        "sdelivery": {
+            "name": "Supplier delivery",
+            "no": "Delivery no.",
+            "number": "Delivery number"
+        },
+        "sinvoice": {
+            "name": "Supplier invoice",
+            "no": "Invoice no.",
+            "number": "Invoice number"
+        },
+        "sorder": {
+            "name": "Order",
+            "no": "Order no.",
+            "number": "Order number"
+        },
+        "srequest": {
+            "name": "Request",
+            "no": "Request no.",
+            "number": "Request number"
+        }
+    },
+    "webletname": {
+        "dialog-billing": "Print to PDF",
+        "dialog-collection": "Print to PDF",
+        "dialog-procurement": "Print to PDF"
+    }
+}

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ixml SYSTEM "http://www.ixmldev.com/schema/ixml.dtd">
+<ixml>
+
+<!-- Get the session -->
+<global var="session" />
+<session var="session" />
+
+<!-- Load the language files -->
+<array var="params">
+	<item key="lang">$APPSETTINGS.defaultlang</item>
+	<array key="accepted">
+		<item>en_US</item>
+		<item>de_DE</item>
+		<item>es_ES</item>
+	</array>
+	<array key="load">
+		<item>zeyos.locale.common</item>
+		<item>zeyos.locale.countries</item>
+		<item>zeyos.locale.billing</item>
+		<item>$SELFNS</item>
+	</array>
+</array>
+<include id="zeyos.locale.loader" var_params="params" />
+
+<!--
+	Returns the Template ID
+
+	@inline
+-->
+<global var="getTemplateId" />
+<function var="getTemplateId">
+	<switch value="$return">
+		<case value="0">
+			<set var="return">$APPSETTINGS.templates.billingQuotes</set>
+		</case>
+		<case value="1">
+			<set var="return">$APPSETTINGS.templates.billingOrders</set>
+		</case>
+		<case value="2">
+			<set var="return">$APPSETTINGS.templates.billingDeliveries</set>
+		</case>
+		<case value="3">
+			<set var="return">$APPSETTINGS.templates.billingInvoices</set>
+		</case>
+		<case value="4">
+			<set var="return">$APPSETTINGS.templates.billingCredits</set>
+		</case>
+		<case value="5">
+			<set var="return">$APPSETTINGS.templates.procurementRequests</set>
+		</case>
+		<case value="6">
+			<set var="return">$APPSETTINGS.templates.procurementOrders</set>
+		</case>
+		<case value="7">
+			<set var="return">$APPSETTINGS.templates.procurementDeliveries</set>
+		</case>
+		<case value="8">
+			<set var="return">$APPSETTINGS.templates.procurementInvoices</set>
+		</case>
+		<case value="9">
+			<set var="return">$APPSETTINGS.templates.procurementCredits</set>
+		</case>
+		<case value="10">
+			<set var="return">$APPSETTINGS.templates.dunningReminder</set>
+		</case>
+		<case value="11">
+			<set var="return">$APPSETTINGS.templates.dunningInitial</set>
+		</case>
+		<case value="12">
+			<set var="return">$APPSETTINGS.templates.dunningIntermediate</set>
+		</case>
+		<case value="13">
+			<set var="return">$APPSETTINGS.templates.dunningFinal</set>
+		</case>
+	</switch>
+</function>
+
+<!--
+	Returns the document entity
+
+	@inline
+-->
+<global var="getEntity" />
+<function var="getEntity">
+	<if value1="$return" value2="dunning" func="=*">
+		<set var="return">dunning</set>
+	<else>
+		<set var="return">transactions</set>
+	</else>
+	</if>
+</function>
+
+<!--
+	Check if a resource exists
+
+	@inline
+-->
+<global var="resourceExists" />
+<function var="resourceExists">
+	<db:select var_result="db" type="single" limit="1">
+		<db:fields>
+			<db:field>ID</db:field>
+		</db:fields>
+		<db:table>resources</db:table>
+		<db:is field="identifier">$return</db:is>
+	</db:select>
+	<if value1="$db[0]">
+		<false var="return" />
+	<else>
+		<true var="return" />
+	</else>
+	</if>
+</function>
+
+<!--
+	Returns the transaction details
+
+	@param {int} ID
+	@param {string} entity
+-->
+<global var="getTransaction"/>
+<function var="getTransaction">
+	<set var="entity">$getEntity($entity)</set>
+	<if value1="$entity" value2="dunning">
+		<db:get entity="dunning" id="$ID" var="return">
+			<db:field>ID</db:field>
+			<db:field alias="transactionnum">dunningnum</db:field>
+			<db:field>ownergroup</db:field>
+			<db:field>account</db:field>
+			<db:field>level</db:field>
+		</db:get>
+		<set var="return.type">$(10 + $self.level)</set>
+	<else>
+		<db:get entity="transactions" id="$ID" var="return">
+			<db:field>ID</db:field>
+			<db:field>transactionnum</db:field>
+			<db:field>ownergroup</db:field>
+			<db:field>type</db:field>
+			<db:field>account</db:field>
+		</db:get>
+	</else>
+	</if>
+
+	<if value1="$return.ID">
+		<error>Transaction ($entity) not found: $ID</error>
+	</if>
+
+	<set var="return.entity">$entity</set>
+</function>
+
+<!--
+	Returns the print-out object for the transaction
+
+	@param {int} ID
+	@param {string} entity
+	@param {string} intro
+	@param {string} outro
+	@param {array} options
+-->
+<global var="getPrintOut" />
+<function var="getPrintOut">
+	<call func="getTransaction" var="self">
+		<param var="entity" />
+		<param var="ID" />
+	</call>
+
+	<!-- Get the document type -->
+	<if value1="$self.entity" value2="dunning">
+		<set var="docTemplateBase">$APPSETTINGS.templates.dunning</set>
+	<else>
+		<set var="docTemplateBase">$APPSETTINGS.templates.billing</set>
+		<if value1="$self.type" value2="4" func="&gt;">
+			<set var="docTemplateBase">$APPSETTINGS.templates.procurement</set>
+		</if>
+	</else>
+	</if>
+
+	<set var="docTemplateType">$getTemplateId($self.type)</set>
+
+	<!-- Intialize the namespace -->
+	<if value1="$APPSETTINGS.namespace" func="!=">
+		<set var="NS">$APPSETTINGS.namespace$.</set>
+	</if>
+
+	<!-- Include the base template -->
+	<include id="$NS$$APPSETTINGS.templates.base" var="Template" />
+
+	<!-- Include the module specific base template (billing, procurement, dunning) -->
+	<if value1="$resourceExists($NS$$docTemplateBase)" value2="1">
+		<try>
+			<include id="$NS$$docTemplateBase" var="Template">
+				<param var="Template" />
+			</include>
+		<catch var="err">
+			<debug:log>Cannot include $NS$$docTemplateBase: $err</debug:log>
+			<error>$err</error>
+		</catch>
+		</try>
+	</if>
+
+	<!-- Include the type specific template (e.g. billing-quote, procurement-order, dunning-reminder, ...) -->
+	<if value1="$resourceExists($NS$$docTemplateType)" value2="1">
+		<try>
+			<include id="$NS$$docTemplateType" var="Template">
+				<param var="Template" />
+			</include>
+		<catch var="err">
+			<debug:log>Cannot include $NS$$docTemplateType: $err</debug:log>
+			<error>$err</error>
+		</catch>
+		</try>
+	</if>
+
+	<new class="Template" var="return">
+		<param name="ID">$ID</param>
+		<param name="intro">$intro</param>
+		<param name="outro">$outro</param>
+		<param name="entity">$self.entity</param>
+		<is var="options" type="array">
+			<param name="options" var="options" />
+		</is>
+	</new>
+</function>
+
+</ixml>

@@ -1,0 +1,1387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ixml SYSTEM "http://www.ixmldev.com/schema/ixml.dtd">
+<ixml>
+
+<call func="LANGUAGE.Localizer.merge">
+	<param name="src">zeyos.locale.countries</param>
+	<param name="merge">1</param>
+</call>
+
+<class var="return">
+	<property name="widthCol0">10</property>
+	<property name="widthCol1">15</property>
+	<property name="widthCol2">24</property>
+	<property name="widthCol3">80</property>
+	<property name="widthCol4">21</property>
+	<property name="widthCol5">22</property>
+	<property name="widthColLeft">49</property>
+	<property name="widthColRight">43</property>
+	<property name="widthColSumLeft">49</property>
+	<property name="widthColSumLabel">80</property>
+	<property name="widthColSumAmount">43</property>
+	<property name="widthColSumTotal">123</property>
+	<property name="widthColInnerLeft">124</property>
+	<property name="widthColInnerRight">132</property>
+	<property name="widthColInner">89</property>
+
+	<property name="basepdf"></property>
+	<property name="format">A4</property>
+	<property name="offset">30</property>
+	<property name="topmargin">23</property>
+	<property name="leftmargin">20</property>
+	<property name="bottommargin">20</property>
+	<property name="rightmargin">20</property>
+	<property name="pageBreakOffset">10</property> <!-- First offset after a pagebreak -->
+	<property name="heightItemHeader">10</property>
+
+	<property name="countPos">0</property>
+
+	<property name="headerPosY">95</property>
+	<property name="widthDocHeader1">45</property>
+	<property name="widthDocHeader2">50</property>
+	<property name="widthDocHeader3">40</property>
+	<property name="widthDocHeader4">30</property>
+
+	<property name="pagebreaklimit_1">250</property>
+	<property name="pagebreaklimit_n">250</property>
+
+	<property name="totalTaxLine">amount.tax.addon</property>
+
+	<property name="rowBorder">B</property>
+	<property name="fontsize">10</property>
+
+	<property name="decCount">2</property>
+	<property name="pageNum">0</property>
+
+	<property name="columnCount">6</property>
+	<property name="retrieve">[
+		"widthColLeft",
+		"widthColRight",
+		"widthColSumLeft",
+		"widthColSumLabel",
+		"widthColSumAmount",
+		"widthColSumTotal",
+		"widthColInnerLeft",
+		"widthColInnerRight",
+		"widthColInner",
+		"format",
+		"offset",
+		"topmargin",
+		"leftmargin",
+		"bottommargin",
+		"rightmargin",
+		"headerPosY",
+		"fontsize",
+		"widthDocHeader1",
+		"widthDocHeader2",
+		"widthDocHeader3",
+		"widthDocHeader4",
+		"highlightColor",
+		"pagebreaklimit_1",
+		"pagebreaklimit_n"
+	]</property>
+
+	<!--
+		Generates a PDF document for billing transactions
+
+		@param {int} ID The transaction ID
+		@param {string} intro
+		@param {string} outro
+	-->
+	<constructor>
+		<config var="this.config" />
+		<set var="this.lang">$LANGUAGE.Localizer.lang</set>
+
+		<if value1="$this.basepdf">
+			<set var="this.basepdf">$APPSETTINGS.basepdf</set>
+		</if>
+
+		<!-- Automatically retrieve app settings -->
+		<decode:json var="settingsProperties">
+			<trim>$this.retrieve</trim>
+		</decode:json>
+		<foreach var="settingsProperties" var_value="propKey">
+			<if value1="$APPSETTINGS[$propKey]" func="!=">
+				<set var="this[$propKey]">$APPSETTINGS[$propKey]</set>
+			</if>
+		</foreach>
+		<for from="1" to="$($this.columnCount - 1)" var="i">
+			<if value1="$APPSETTINGS[widthCol$i]" func="!=">
+				<set var="this[widthCol$i]">$APPSETTINGS[widthCol$i]</set>
+			</if>
+		</for>
+
+		<if value1="$entity" value2="dunning">
+			<db:get entity="dunning" id="$ID" var="this.trans" />
+			<set var="this.trans.transactionnum">$this.trans.dunningnum</set>
+			<set var="this.trans.type">$(10 + $this.trans.level)</set>
+			<db:select var="sqlPayments">
+				<db:fields>
+					<db:expression>SUM("c"."amount")</db:expression>
+				</db:fields>
+				<db:table alias="c">payments</db:table>
+				<db:or>
+					<db:is field="c.status">1</db:is> <!-- Completed -->
+					<db:is field="c.status">3</db:is> <!-- Booked -->
+				</db:or>
+				<db:is field1="a.transaction" field2="c.transaction" />
+			</db:select>
+			<db:select var="sqlLevel">
+				<db:fields>
+					<db:expression>COUNT(*)</db:expression>
+				</db:fields>
+				<db:table alias="e">dunning2transactions</db:table>
+				<db:join>
+					<db:inner alias="f" table="dunning" field1="e.dunning" field2="f.ID" />
+				</db:join>
+				<db:is field="f.status" func="!=">2</db:is> <!-- Canceled -->
+				<db:is field1="a.transaction" field2="e.transaction" />
+			</db:select>
+			<db:select var="sqlFees">
+				<db:fields>
+					<db:expression>SUM("d"."fee")</db:expression>
+				</db:fields>
+				<db:table alias="d">dunning2transactions</db:table>
+				<db:join>
+					<db:inner alias="g" table="dunning" field1="d.dunning" field2="g.ID" />
+				</db:join>
+				<db:is field="g.status" func="!=">2</db:is> <!-- Canceled -->
+				<db:is field1="a.transaction" field2="d.transaction" />
+			</db:select>
+			<db:select var_result="this.items" type="assoc">
+				<db:fields>
+					<db:field>b.ID</db:field>
+					<db:field>b.transactionnum</db:field>
+					<db:field>b.date</db:field>
+					<db:field>b.duedate</db:field>
+					<db:field>b.status</db:field>
+					<db:field>b.currency</db:field>
+					<db:field>b.exchangerate</db:field>
+					<db:field>b.discount</db:field>
+					<db:field>b.netamount</db:field>
+					<db:field>b.tax</db:field>
+					<db:field>b.items</db:field>
+					<db:field alias="payments">($sqlPayments)</db:field>
+					<db:field alias="charges">($sqlFees)</db:field>
+					<db:field alias="level">($sqlLevel)</db:field>
+				</db:fields>
+				<db:table alias="a">dunning2transactions</db:table>
+				<db:join>
+					<db:inner alias="b" table="transactions" field1="a.transaction" field2="b.ID" />
+				</db:join>
+				<db:is field="a.dunning">$ID</db:is>
+			</db:select>
+			<set var="this.entity">dunning</set>
+		<else>
+			<db:get entity="transactions" id="$ID" var="this.trans" />
+			<decode:json var="this.items">$this.trans.items</decode:json>
+			<unset var="this.trans.items" />
+			<set var="this.entity">transactions</set>
+		</else>
+		</if>
+
+		<extdata:get entity="$entity" id="$ID" var="this.extdata" />
+		<if value1="$this.trans.account" func="!=">
+			<db:get entity="accounts" id="$this.trans.account" var="this.account" />
+			<db:get entity="contacts" id="$this.account.contact" var="this.contact" />
+			<extdata:get entity="accounts" id="$this.trans.account" var="this.account.extdata" />
+			<extdata:get entity="contacts" id="$this.account.contact" var="this.contact.extdata" />
+		</if>
+
+		<if value1="$this.trans.assigneduser" func="!=">
+			<db:select var_result="this.assigneduser" type="self">
+				<db:fields>
+					<db:field>a.ID</db:field>
+					<db:field>a.name</db:field>
+					<db:field>b.firstname</db:field>
+					<db:field>b.lastname</db:field>
+					<db:field>b.email</db:field>
+					<db:field>b.title</db:field>
+					<db:field>b.company</db:field>
+					<db:field>b.email</db:field>
+					<db:field>b.phone</db:field>
+					<db:field>b.fax</db:field>
+				</db:fields>
+				<db:table alias="a">users</db:table>
+				<db:join>
+					<db:leftouter alias="b" table="contacts" field1="a.contact" field2="b.ID" />
+				</db:join>
+				<db:is field="a.ID">$this.trans.assigneduser</db:is>
+			</db:select>
+			<set var="this.assigneduser.printname">$this.assigneduser.name</set>
+			<if value1="$this.assigneduser.lastname" func="!=">
+				<if value1="$this.assigneduser.firstname" func="!=">
+					<set var="this.assigneduser.printname">$this.assigneduser.firstname $this.assigneduser.lastname</set>
+				</if>
+			</if>
+		</if>
+
+		<set var="this.separator">$L(number.separator)</set>
+		<set var="this.decpoint">$L(number.decpoint)</set>
+
+		<set var="this.widthTotal">$($this.widthCol0 + $this.widthCol1 + $this.widthCol2 + $this.widthCol3 +$this.widthCol4 + $this.widthCol5)</set>
+
+		<array var="this.importPages">
+			<item key="1">1</item>
+			<item key="2"></item>
+		</array>
+
+		<switch value="$this.trans.type">
+			<case value="0">
+				<set var="this.docName">$L(type.quote.name)</set>
+				<set var="this.docNumber">$L(type.quote.number)</set>
+				<set var="this.docNo">$L(type.quote.no)</set>
+				<set var="this.type">quote</set>
+			</case>
+			<case value="1">
+				<set var="this.docName">$L(type.order.name)</set>
+				<set var="this.docNumber">$L(type.order.number)</set>
+				<set var="this.docNo">$L(type.order.no)</set>
+				<set var="this.type">order</set>
+			</case>
+			<case value="2">
+				<set var="this.docName">$L(type.delivery.name)</set>
+				<set var="this.docNumber">$L(type.delivery.number)</set>
+				<set var="this.docNo">$L(type.delivery.no)</set>
+				<set var="this.type">delivery</set>
+			</case>
+			<case value="3">
+				<set var="this.docName">$L(type.invoice.name)</set>
+				<set var="this.docNumber">$L(type.invoice.number)</set>
+				<set var="this.docNo">$L(type.invoice.no)</set>
+				<set var="this.type">invoice</set>
+			</case>
+			<case value="4">
+				<set var="this.docName">$L(type.credit.name)</set>
+				<set var="this.docNumber">$L(type.credit.number)</set>
+				<set var="this.docNo">$L(type.credit.no)</set>
+				<set var="this.type">credit</set>
+			</case>
+			<case value="5">
+				<set var="this.docName">$L(type.srequest.name)</set>
+				<set var="this.docNumber">$L(type.srequest.number)</set>
+				<set var="this.docNo">$L(type.srequest.no)</set>
+				<set var="this.type">request</set>
+			</case>
+			<case value="6">
+				<set var="this.docName">$L(type.sorder.name)</set>
+				<set var="this.docNumber">$L(type.sorder.number)</set>
+				<set var="this.docNo">$L(type.sorder.no)</set>
+				<set var="this.type">order</set>
+			</case>
+			<case value="7">
+				<set var="this.docName">$L(type.sdelivery.name)</set>
+				<set var="this.docNumber">$L(type.sdelivery.number)</set>
+				<set var="this.docNo">$L(type.sdelivery.no)</set>
+				<set var="this.type">delivery</set>
+			</case>
+			<case value="8">
+				<set var="this.docName">$L(type.sinvoice.name)</set>
+				<set var="this.docNumber">$L(type.sinvoice.number)</set>
+				<set var="this.docNo">$L(type.sinvoice.no)</set>
+				<set var="this.type">invoice</set>
+			</case>
+			<case value="9">
+				<set var="this.docName">$L(type.scredit.name)</set>
+				<set var="this.docNumber">$L(type.scredit.number)</set>
+				<set var="this.docNo">$L(type.scredit.no)</set>
+				<set var="this.type">credit</set>
+			</case>
+			<case value="10">
+				<set var="this.docName">$L(dunning.title.reminder.name)</set>
+				<set var="this.docNumber">$L(dunning.title.reminder.number)</set>
+				<set var="this.docNo">$L(dunning.title.reminder.no)</set>
+				<set var="this.type">reminder</set>
+			</case>
+			<case value="11">
+				<set var="this.docName">$L(dunning.title.dunning1.name)</set>
+				<set var="this.docNumber">$L(type.dunning.number)</set>
+				<set var="this.docNo">$L(type.dunning.no)</set>
+				<set var="this.type">dunning1</set>
+			</case>
+			<case value="12">
+				<set var="this.docName">$L(dunning.title.dunning2.name)</set>
+				<set var="this.docNumber">$L(type.dunning.number)</set>
+				<set var="this.docNo">$L(type.dunning.no)</set>
+				<set var="this.type">dunning2</set>
+			</case>
+			<case value="13">
+				<set var="this.docName">$L(dunning.title.dunning3.name)</set>
+				<set var="this.docNumber">$L(type.dunning.number)</set>
+				<set var="this.docNo">$L(type.dunning.no)</set>
+				<set var="this.type">dunning3</set>
+			</case>
+		</switch>
+
+		<set var="this.umi">billing</set>
+		<set var="this.account.accountnum">-</set>
+		<if value1="$this.account.customernum" func="!=">
+			<set var="this.account.accountnum">$this.account.customernum</set>
+		</if>
+		<if value1="$this.trans.type" value2="4" func="&gt;">
+			<set var="this.umi">procurement</set>
+			<if value1="$this.account.suppliernum" func="!=">
+				<set var="this.account.accountnum">$this.account.suppliernum</set>
+			</if>
+		</if>
+
+		<set var="this.account.fullname">$this.account.lastname</set>
+		<if value1="$this.account.firstname" func="!=">
+			<set var="this.account.fullname">$this.account.firstname $this.account.lastname</set>
+		</if>
+
+		<set var="this.partnerNumber">$L(partner.customer.number)</set>
+		<if value1="$this.trans.type" value2="4" func="&gt;">
+			<if value1="$this.trans.type" value2="10" func="&lt;=">
+				<set var="this.partnerNumber">$L(partner.supplier.number)</set>
+			</if>
+		</if>
+
+		<set var="this.intro">$intro</set>
+		<set var="this.outro">$outro</set>
+
+		<array var="this.printOptions">
+			<array key="hideSums">
+				<item key="type">checkbox</item>
+				<item key="label">$L(dialog.hidetotal)</item>
+			</array>
+			<array key="hideTitleSums">
+				<item key="type">checkbox</item>
+				<item key="label">$L(dialog.hidesubtotals)</item>
+			</array>
+			<array key="hideGross">
+				<item key="type">checkbox</item>
+				<item key="label">$L(dialog.hidegross)</item>
+			</array>
+			<array key="blank">
+				<item key="type">checkbox</item>
+				<item key="label">$L(dialog.printblank)</item>
+			</array>
+		</array>
+
+		<!-- Initialize the options -->
+		<is var="options" type="array">
+			<assign var="this.options" var_source="options" />
+		<else>
+			<decode:json var="this.options">$this.extdata.options</decode:json>
+		</else>
+		</is>
+
+		<array:length var="this.items" var_result="this.itemLength" />
+		<array var="this.taxes" />
+
+		<call func="this.defaultEvents" />
+		<call func="this.initEvents" />
+	</constructor>
+
+	<!--
+		Executes additional event handler
+
+		@param {string} event
+		@param {array} item
+	-->
+	<method name="fireEvent">
+		<foreach var="this.events[$event]" var_value="eventHandler">
+			<call func="eventHandler" var_this="this">
+				<is var="item">
+					<param name="item" var="item" />
+				</is>
+			</call>
+		</foreach>
+	</method>
+
+	<!--
+		Adds an additional event handler
+
+		@param {string} event
+		@param {string} name
+		@param {function} func
+	-->
+	<method name="addEvent">
+		<assign var="this.events[$event][$name]" var_source="func" />
+	</method>
+
+	<!--
+		Inline function to return a print option (set via the print-out dialog)
+
+		@param {string} return
+		@return {string}
+	-->
+	<method name="getPrintOptions">
+		<assign var="return" var_source="this.printOptions" />
+		<foreach var="this.options" var_key="key" var_value="value">
+			<is var="return[$key]" type="array">
+				<set var="return[$key][value]">$value</set>
+			</is>
+		</foreach>
+		<foreach var="return" var_key="key" var_value="elem">
+			<is var="elem.value" type="undefined">
+				<is var="elem.default">
+					<assign var="return[$key][value]" var_source="elem.default" />
+				</is>
+			</is>
+		</foreach>
+	</method>
+
+	<!--
+		Inline function to format an amount
+	-->
+	<method name="formatAmount">
+		<math:format separator="$this.separator" decpoint="$this.decpoint" countdec="$this.decCount" var="return">
+			<math:round precision="$this.decCount">$return</math:round>
+		</math:format>
+	</method>
+
+	<!--
+		Inline function to format a number
+	-->
+	<method name="formatNum">
+		<set var="int">$return</set>
+		<cast type="int" var="int"/>
+		<if value1="$int" value2="$return" func="!=">
+			<length var="len1">$($return)</length>
+			<length var="len2">$int</length>
+			<set var="decpoint">$($len1 - $len2 - 1)</set>
+		</if>
+		<math:format separator="$this.separator" decpoint="$this.decpoint" countdec="$($decpoint)" var="return">$return</math:format>
+	</method>
+
+	<!--
+		Inline function to format a value - if the value is not set "-" will be returned
+	-->
+	<method name="formatValue">
+		<if value1="$return">
+			<set var="return">-</set>
+		</if>
+	</method>
+
+	<!--
+		Returns the item unit
+	-->
+	<method name="getUnit">
+		<set var="return">$this.config.units[$return]</set>
+	</method>
+
+	<!--
+		Rounds an amount
+	-->
+	<method name="roundDec">
+		<math:round precision="$this.decCount" var="return">$return</math:round>
+	</method>
+
+	<!--
+		Returns the country translations for an address block
+	-->
+	<method name="getCountry">
+		<if value1="$return" func="!=">
+			<tolower var="key">$return</tolower>
+			<set var="country">$L(countries.$key)</set>
+			<if value1="$country">
+				<set var="return"> ($return)</set>
+			<else>
+				<set var="return">&n;$country ($return)</set>
+			</else>
+			</if>
+		</if>
+	</method>
+
+	<!--
+		Displays optional details
+
+		@param {int} marginLeft
+		@param {int} widthLabel
+		@param {int} widthValue
+		@param {string} label
+		@param {string} value
+		@param {array} values
+	-->
+	<method name="listDetails">
+		<if value1="$widthLabel">
+			<set var="widthLabel">30</set>
+		</if>
+		<if value1="$widthValue">
+			<set var="widthValue">50</set>
+		</if>
+		<if value1="$label" func="!=">
+			<array var="values">
+				<item key="$label">$value</item>
+			</array>
+		</if>
+		<foreach var="values" var_key="label" var_value="value">
+			<if value1="$value" func="!=">
+				<if value1="$spacer">
+					<pdf:linebreak offset="2" />
+					<set var="spacer">1</set>
+				</if>
+				<pdf:style fontsize="$this.fontsize">
+					<pdf:row leftmargin="$($marginLeft)">
+						<pdf:style fontstyle="B">
+							<pdf:col width="$widthLabel">$label$:</pdf:col>
+						</pdf:style>
+						<pdf:col width="$widthValue">$value</pdf:col>
+					</pdf:row>
+				</pdf:style>
+			</if>
+		</foreach>
+	</method>
+
+	<!--
+		Format Address Name
+	-->
+	<method name="getAddressName">
+		<set var="name">$this.account.lastname</set>
+		<if value1="$this.account.firstname" func="!=">
+			<set var="name">$this.account.firstname $name</set>
+		</if>
+
+		<if value1="$return" value2="$name" func="!=">
+			<if value1="$return" func="!=">
+				<return />
+			</if>
+			<set var="return">$name</set>
+		</if>
+
+		<if value1="$this.account.extdata.name1" func="!=">
+			<set var="return">$this.account.extdata.name1</set>
+			<if value1="$this.account.extdata.name2" func="!=">
+				<concat var="return">&n;$this.account.extdata.name2</concat>
+			</if>
+		</if>
+	</method>
+
+	<!--
+		Displays the address block
+	-->
+	<method name="blockAddress">
+		<call func="this.fireEvent">
+			<param name="event">beforeAddress</param>
+		</call>
+
+		<pdf:linebreak offset="$this.offset" />
+
+		<pdf:style fontsize="$($this.fontsize + 1)">
+			<switch value="$this.trans.type">
+				<case value="2">
+					<if value1="$this.trans.shippingrecipient" func="!=">
+						<set var="skip">1</set>
+						<pdf:block>$this.getAddressName($this.trans.shippingrecipient)</pdf:block>
+						<pdf:block>$this.trans.shippingaddress</pdf:block>
+						<pdf:block>$this.trans.shippingpostalcode $this.trans.shippingcity$$this.getCountry($this.trans.shippingcountry)</pdf:block>
+					</if>
+				</case>
+				<case value="3">
+					<if value1="$this.trans.billingrecipient" func="!=">
+						<set var="skip">1</set>
+						<pdf:block>$this.getAddressName($this.trans.billingrecipient)</pdf:block>
+						<pdf:block>$this.trans.billingaddress</pdf:block>
+						<pdf:block>$this.trans.billingpostalcode $this.trans.billingcity$$this.getCountry($this.trans.billingcountry)</pdf:block>
+					</if>
+				</case>
+			</switch>
+
+			<if value1="$skip">
+				<if value1="$this.account.lastname" func="!=">
+					<pdf:block>$this.getAddressName()</pdf:block>
+					<pdf:block>$this.contact.address</pdf:block>
+					<pdf:block>$this.contact.postalcode $this.contact.city$$this.getCountry($this.contact.country)</pdf:block>
+				</if>
+			</if>
+		</pdf:style>
+
+		<call func="this.fireEvent">
+			<param name="event">afterAddress</param>
+		</call>
+	</method>
+
+	<method name="blockHeader"> <!-- Depreciated -->
+		<call func="this.blockTitle" />
+	</method>
+
+	<!--
+		Displays the transaction header
+	-->
+	<method name="blockTitle">
+		<call func="this.fireEvent">
+			<param name="event">beforeTitle</param>
+		</call>
+
+		<pdf:getpos var_y="posY" />
+		<if value1="$posY" value2="$this.headerPosY" func="&lt;">
+			<pdf:linebreak offset="$($this.headerPosY - $posY)" />
+		</if>
+
+		<if value1="$this.account.accountnum">
+			<set var="this.account.accountnum">-</set>
+		</if>
+		<if value1="$this.assigneduser.printname">
+			<set var="this.assigneduser.printname">-</set>
+		</if>
+
+		<pdf:style fontsize="$($this.fontsize - 1)">
+			<pdf:style fontstyle="B" textcolor="$this.highlightColor">
+				<pdf:style fontsize="$($this.fontsize + 1)">
+					<pdf:block>$this.docName $this.trans.transactionnum</pdf:block>
+				</pdf:style>
+				<pdf:linebreak offset="3" />
+				<pdf:row>
+					<pdf:col width="$this.widthDocHeader1">$this.partnerNumber</pdf:col>
+					<pdf:col width="$this.widthDocHeader2">$this.docNumber</pdf:col>
+					<pdf:col width="$this.widthDocHeader3">$L(field.agent)</pdf:col>
+					<pdf:col width="$this.widthDocHeader4">$L(field.date)</pdf:col>
+				</pdf:row>
+				<pdf:linebreak offset="2" />
+			</pdf:style>
+			<pdf:row>
+				<pdf:col width="$this.widthDocHeader1">$this.account.accountnum</pdf:col>
+				<pdf:col width="$this.widthDocHeader2">$this.trans.transactionnum</pdf:col>
+				<pdf:col width="$this.widthDocHeader3">$this.assigneduser.printname</pdf:col>
+				<pdf:col width="$this.widthDocHeader4">
+					<date:format format="$L(date.full)">$this.trans.date</date:format>
+				</pdf:col>
+			</pdf:row>
+			<pdf:linebreak offset="10" />
+		</pdf:style>
+
+		<call func="this.fireEvent">
+			<param name="event">beforeTitle</param>
+		</call>
+	</method>
+
+	<!--
+		Displays the Intro
+	-->
+	<method name="blockIntro">
+		<call func="this.fireEvent">
+			<param name="event">beforeIntro</param>
+		</call>
+
+		<if value1="$this.intro" func="!=">
+			<pdf:style fontsize="$this.fontsize">
+				<pdf:block>$this.intro</pdf:block>
+				<pdf:linebreak offset="10" />
+			</pdf:style>
+		</if>
+
+		<call func="this.fireEvent">
+			<param name="event">afterIntro</param>
+		</call>
+	</method>
+
+	<!--
+		Displays the Outro
+	-->
+	<method name="blockOutro">
+		<call func="this.fireEvent">
+			<param name="event">beforeOutro</param>
+		</call>
+
+		<if value1="$this.outro" func="!=">
+			<pdf:style fontsize="$this.fontsize">
+				<pdf:linebreak offset="5" />
+				<pdf:block>$this.outro</pdf:block>
+			</pdf:style>
+		</if>
+
+		<call func="this.fireEvent">
+			<param name="event">afterOutro</param>
+		</call>
+	</method>
+
+	<!--
+		Display the item header
+	-->
+	<method name="blockItemHeader">
+		<call func="this.fireEvent">
+			<param name="event">beforeItemHeader</param>
+		</call>
+
+		<if value1="$this.isTable" value2="1">
+			<pdf:linebreak offset="$($this.topmargin - $this.heightItemHeader)" />
+		</if>
+		<pdf:style border="T" borderwidth="0.3" fontsize="1">
+			<pdf:row leftmargin="0" rightmargin="0">
+				<pdf:col width="$this.widthTotal" height="2" />
+			</pdf:row>
+		</pdf:style>
+		<pdf:style fontsize="$this.fontsize" fontstyle="B">
+			<pdf:row>
+				<pdf:col width="$this.widthCol0">$L(item.pos)</pdf:col>
+				<pdf:col width="$this.widthCol1">$L(item.amount)</pdf:col>
+				<pdf:col width="$this.widthCol2">$L(item.itemnum)</pdf:col>
+				<pdf:col width="$this.widthCol3">$L(item.name)</pdf:col>
+				<pdf:style align="R">
+					<pdf:col width="$this.widthCol4">$L(item.price)</pdf:col>
+					<pdf:col width="$this.widthCol5">$L(item.total)</pdf:col>
+				</pdf:style>
+			</pdf:row>
+		</pdf:style>
+		<pdf:style border="B" borderwidth="0.5" fontsize="1">
+			<pdf:row leftmargin="0" rightmargin="0">
+				<pdf:col width="$this.widthTotal" height="2" />
+			</pdf:row>
+		</pdf:style>
+		<pdf:linebreak offset="2" />
+
+		<call func="this.fireEvent">
+			<param name="event">afterItemHeader</param>
+		</call>
+	</method>
+
+	<!--
+		Adds an item row
+		@param item
+	-->
+	<method name="blockItemRow">
+		<pdf:style valign="M" fontsize="$this.fontsize" bgcolor="$this.altBg">
+			<pdf:row leftmargin="0" rightmargin="0">
+				<pdf:col width="$this.widthCol0">$item.pos</pdf:col>
+				<pdf:col width="$this.widthCol1">$this.formatNum($item.amount) $this.getUnit($item.unit)</pdf:col>
+				<pdf:col width="$this.widthCol2">$this.formatValue($item.itemnum)</pdf:col>
+				<pdf:col width="$this.widthCol3">$item.name</pdf:col>
+				<pdf:style align="R">
+					<pdf:col width="$this.widthCol4">$this.formatAmount($item.sellingprice)</pdf:col>
+					<pdf:col width="$this.widthCol5">$this.formatAmount($($item.sellingprice * $item.amount))</pdf:col>
+				</pdf:style>
+			</pdf:row>
+		</pdf:style>
+	</method>
+
+	<!--
+		Adds a coupon row
+		@param item
+	-->
+	<method name="blockItemCoupon">
+		<pdf:style valign="M" fontsize="$this.fontsize" bgcolor="$this.altBg">
+			<pdf:row leftmargin="0" rightmargin="0">
+				<pdf:col width="$this.widthCol0">$item.pos</pdf:col>
+				<pdf:col width="$this.widthCol1"></pdf:col>
+				<pdf:col width="$this.widthCol2">$this.formatValue($item.code)</pdf:col>
+				<pdf:col width="$this.widthCol3">$item.name</pdf:col>
+				<pdf:style align="R">
+					<pdf:col width="$this.widthCol4">$this.formatAmount($item.value)</pdf:col>
+					<pdf:col width="$this.widthCol5">$this.formatAmount($item.value)</pdf:col>
+				</pdf:style>
+			</pdf:row>
+		</pdf:style>
+	</method>
+
+	<!--
+		Sums up a title section
+		@param {int} level The title level (0: supertitle, 1: title, 2: subtitle)
+		@param {string} title The new section title
+	-->
+	<method name="sumupSection">
+		<set var="level">$($level)</set>
+
+		<for from="2" to="$level" var="i">
+			<if value1="$this.currentTitle[$i]" func="!=">
+				<if value1="$this.options.hideTitleSums" value2="1" func="!=">
+					<set var="return">1</set>
+
+					<switch value="$i">
+						<case value="0">
+							<set var="fontstyle">B</set>
+							<set var="fontsize">$($this.fontsize + 2)</set>
+						</case>
+						<case value="1">
+							<set var="fontstyle">B</set>
+							<set var="fontsize">$($this.fontsize + 1)</set>
+						</case>
+						<case value="2">
+							<set var="fontstyle">BI</set>
+							<set var="fontsize">$($this.fontsize)</set>
+						</case>
+					</switch>
+
+					<call func="this.totalRow">
+						<param name="borderBottom">0.3</param>
+						<param name="label">$this.currentTitle[$i]</param>
+						<param name="amount">$($this.currentTitleSum[$i])</param>
+						<param name="fontstyle">$fontstyle</param>
+						<param name="fontsize">$fontsize</param>
+					</call>
+					<pdf:linebreak offset="1" />
+				</if>
+			</if>
+			<set var="this.currentTitle[$i]" />
+			<set var="this.currentTitleSum[$i]" />
+		</for>
+		<if value1="$title" func="!=">
+			<set var="this.currentTitle[$level]">$title</set>
+		</if>
+	</method>
+
+	<!--
+		Adds an item text
+		@param item
+	-->
+	<method name="blockItemText">
+		<switch value="$item.variant">
+			<!-- Display continous text (Variant 0) -->
+			<case value="0">
+				<pdf:style fontsize="$this.fontsize">
+					<pdf:block>$item.text</pdf:block>
+				</pdf:style>
+			</case>
+			<!-- Display an annotation (Variant 1) -->
+			<case value="1">
+				<pdf:style fontsize="$this.fontsize">
+					<pdf:block leftmargin="$this.widthColLeft" rightmargin="$this.widthColRight">$item.text</pdf:block>
+				</pdf:style>
+			</case>
+			<!-- Display a sub title (Variant 2) -->
+			<case value="2">
+				<pdf:linebreak offset="2" />
+				<pdf:style fontsize="$($this.fontsize + 1)" fontstyle="BI">
+					<pdf:block>$item.text</pdf:block>
+				</pdf:style>
+			</case>
+			<!-- Display a title (Variant 3) -->
+			<case value="3">
+				<pdf:linebreak offset="2" />
+				<pdf:style fontsize="$($this.fontsize + 2)" fontstyle="B">
+					<pdf:block>$item.text</pdf:block>
+				</pdf:style>
+			</case>
+			<!-- Display a super title (Variant 4) -->
+			<case value="4">
+				<pdf:linebreak offset="2" />
+				<pdf:style fontsize="$($this.fontsize + 3)" fontstyle="B">
+					<pdf:block>$item.text</pdf:block>
+				</pdf:style>
+			</case>
+		</switch>
+	</method>
+
+	<!--
+		Adds a pagebreak
+	-->
+	<method name="pagebreak">
+		<if value1="$this.pageNum" value2="1" func="&gt;">
+			<if value1="$($this.pageNum - $this.lastPageBreak)" value2="1">
+				<return />
+			</if>
+		</if>
+		<set var="this.lastPageBreak">$this.pageNum</set>
+
+		<call func="this.totalRow">
+			<param name="borderBottom">0.3</param>
+			<param name="label">$L(amount.subtotal)</param>
+			<param name="amount">$this.nettotal</param>
+		</call>
+		<pdf:pagebreak />
+		<pdf:linebreak offset="$this.pageBreakOffset" />
+	</method>
+
+	<!--
+		Adds a line separator
+	-->
+	<method name="addLine">
+		<if value1="$item.row" value2="0" func="&gt;">
+			<pdf:style border="B" borderwidth="0.1" bordercolor="#d5d5d5">
+				<pdf:block width="$this.widthTotal" height="1"></pdf:block>
+			</pdf:style>
+			<pdf:linebreak offset="1" />
+		</if>
+	</method>
+
+	<!--
+		Adds a row for the sum-up section
+
+		@see blockTotal
+		@param {float} borderTop Width for the upper border
+		@param {float} borderBottom Width for the lower border
+		@param {string} label
+		@param {float} amount
+		@param {string} fontstyle
+		@param {int} fontsize
+	-->
+	<method name="totalRow">
+		<if value1="$borderTop" value2="0" func="&gt;">
+			<pdf:linebreak offset="2" />
+			<pdf:style fontsize="1" border="T" borderwidth="$borderTop">
+				<pdf:row leftmargin="$this.widthColSumLeft">
+					<pdf:col width="$this.widthColSumTotal" height="2" />
+				</pdf:row>
+			</pdf:style>
+		</if>
+
+		<if value1="$fontstyle">
+			<set var="fontstyle">B</set>
+		</if>
+		<if value1="$fontsize">
+			<set var="fontsize">$this.fontsize</set>
+		</if>
+
+		<pdf:row leftmargin="$this.widthColSumLeft">
+			<pdf:style fontsize="$fontsize" fontstyle="$fontstyle">
+				<pdf:col width="$this.widthColSumLabel">$label</pdf:col>
+				<pdf:style align="R">
+					<pdf:col width="$this.widthColSumAmount">$this.formatAmount($amount)</pdf:col>
+				</pdf:style>
+			</pdf:style>
+		</pdf:row>
+		<if value1="$borderBottom" value2="0" func="&gt;">
+			<pdf:style fontsize="1" border="B" borderwidth="$borderBottom">
+				<pdf:row leftmargin="$this.widthColSumLeft">
+					<pdf:col width="$this.widthColSumTotal" height="2" />
+				</pdf:row>
+			</pdf:style>
+		</if>
+	</method>
+
+	<!--
+		Adds the sum-up section
+	-->
+	<method name="blockTotal">
+		<pdf:style fontsize="$($this.fontsize + 1)">
+			<!-- NET AMOUNT -->
+			<if value1="$this.options.hideSums" value2="1" func="!=">
+				<set var="this.discounttotal">$($this.discounttotal)</set>
+				<if value1="$this.discounttotal" value2="0" func="!=">
+					<call func="this.totalRow">
+						<param name="label">$L(amount.netdiscount.excluding)</param>
+						<param name="amount">$($this.nettotal + $this.discounttotal)</param>
+					</call>
+					<call func="this.totalRow">
+						<param name="borderTop">0.3</param>
+						<param name="label">$L(amount.discount)</param>
+						<param name="amount">$this.discounttotal</param>
+					</call>
+					<call func="this.totalRow">
+						<param name="borderTop">0.3</param>
+						<param name="label">$L(amount.netdiscount.including)</param>
+						<param name="amount">$this.nettotal</param>
+					</call>
+				<else>
+					<call func="this.totalRow">
+						<param name="label">$L(amount.nettotal)</param>
+						<param name="amount">$this.trans.netamount</param>
+					</call>
+				</else>
+				</if>
+			</if>
+
+			<call func="this.fireEvent">
+				<param name="event">afterTotalNet</param>
+			</call>
+
+			<if value1="$this.options.hideSums" value2="1" func="!=">
+				<if value1="$this.options.hideGross" value2="1" func="!=">
+					<!-- TAXES -->
+					<set var="taxTotal">0</set>
+					<foreach var="this.taxes" var_key="taxrate" var_value="taxamount">
+						<math:round precision="2" var="taxamount">$taxamount</math:round>
+						<set var="taxTotal">$($taxTotal + $taxamount)</set>
+						<call func="this.totalRow">
+							<param name="borderTop">0.3</param>
+							<param name="label">$L($this.totalTaxLine, {"taxrate": "$taxrate", "amount": "$this.formatAmount($this.taxAmounts[$taxrate])"})</param>
+							<param name="amount">$taxamount</param>
+						</call>
+					</foreach>
+
+					<!--
+					@TODO: Implement rounding error "Rundungsfehler zugunsten MwSt."
+					<math:round precision="2" var="netamount">$this.trans.netamount</math:round>
+					<math:round precision="2" var="totalamount">$($this.trans.netamount + $this.trans.taxamount)</math:round>
+					<math:round var="rounderr" precision="2">$totalamount - $netamount - $taxTotal</math:round>
+					<if value1="$rounderr" func="&lt;=" value2="-0.01">
+						<call func="this.totalRow">
+							<param name="borderTop">0.3</param>
+							<param name="label">$L(rounderr)</param>
+							<param name="amount">$rounderr</param>
+						</call>
+					</if>
+					-->
+
+					<call func="this.fireEvent">
+						<param name="event">afterTotalTax</param>
+					</call>
+
+					<!-- TOTAL AMOUNT -->
+					<call func="this.totalRow">
+						<param name="borderTop">0.5</param>
+						<param name="borderBottom">0.5</param>
+						<param name="label">$L(amount.total)</param>
+						<param name="amount">$($this.trans.netamount + $taxTotal)</param>
+					</call>
+				</if>
+			</if>
+		</pdf:style>
+	</method>
+
+	<method name="blockItemCustom" />
+
+	<method name="create">
+		<null var="templateTempFile" />
+
+		<if value1="$this.options.blank" value2="1" func="!=">
+			<try>
+				<include id="$this.basepdf" type="resource" var="pdf" />
+				<is var="pdf" type="non-null">
+					<file:exists filename="./data/temp" var="exists" />
+					<is var="exists" type="false">
+						<file:makedir dirname="./data/temp" />
+					</is>
+
+					<temp:write var="templateTempFile">$pdf</temp:write>
+				</is>
+			<catch var="error">
+			</catch>
+			</try>
+		<else>
+			<unset var="this.importPages" />
+		</else>
+		</if>
+
+		<is var="templateTempFile" type="non-empty">
+			<temp:path id="$templateTempFile" var="templateFile" />
+		<else>
+			<set var="templateFile" />
+		</else>
+		</is>
+
+		<pdf:document var="return">
+			<call func="this.fireEvent">
+				<param name="event">beforeDocument</param>
+			</call>
+			<pdf:section leftmargin="$this.leftmargin" rightmargin="$this.rightmargin" topmargin="$this.topmargin" bottommargin="$this.bottommargin" format="$this.format">
+				<pdf:templates filename="$templateFile">
+					<foreach var="this.importPages" var_key="key" var_value="value">
+						<pdf:template source="$key" target="$value" />
+					</foreach>
+				</pdf:templates>
+				<pdf:header>
+					<pdf:style font="$this.fontFamily">
+						<math:inc var="this.pageNum" />
+						<call func="this.fireEvent">
+							<param name="event">beforeHeader</param>
+						</call>
+						<if value1="$this.isTable" value2="1">
+							<call func="this.blockItemHeader" />
+						</if>
+						<call func="this.fireEvent">
+							<param name="event">afterHeader</param>
+						</call>
+					</pdf:style>
+				</pdf:header>
+				<pdf:footer>
+					<pdf:style font="$this.fontFamily">
+						<call func="this.fireEvent">
+							<param name="event">beforeFooter</param>
+						</call>
+						<call func="this.fireEvent">
+							<param name="event">afterFooter</param>
+						</call>
+					</pdf:style>
+				</pdf:footer>
+				<pdf:body>
+					<pdf:style font="$this.fontFamily">
+						<call func="this.blockAddress" />
+						<call func="this.blockTitle" />
+
+						<call func="this.blockIntro" />
+
+						<if value1="$this.isTable" value2="1" func="!=">
+							<call func="this.blockItemHeader" />
+							<set var="this.isTable">1</set>
+						</if>
+						<foreach var="this.items" var_key="row" var_value="item">
+							<set var="item.row">$row</set>
+
+							<call func="this.fireEvent">
+								<param name="event">beforeRow</param>
+								<param name="item" var="item" />
+							</call>
+							<switch value="$item.type">
+								<case value="0">
+									<set var="item.nettotal">$($item.amount * ($item.sellingprice - $item.rebate) * (1 - $item.discount / 100) * (1 - $item.discount2 / 100))</set>
+									<set var="item.taxamount">$($item.nettotal * $item.taxrate / 100)</set>
+									<set var="item.discountamount">$($item.amount * ($item.rebate + ($item.sellingprice - $item.rebate) * $item.discount / 100 + ($item.sellingprice - $item.rebate) * $item.discount / 100 * $item.discount2 / 100))</set>
+									<set var="this.discounttotal">$($this.discounttotal + $item.discountamount)</set>
+									<set var="this.taxes[$item.taxrate]">$($this.taxes[$item.taxrate] + $item.taxamount)</set>
+									<set var="this.taxAmounts[$item.taxrate]">$($this.taxAmounts[$item.taxrate] + $item.nettotal)</set>
+									<set var="this.nettotal">$($this.nettotal + $item.nettotal)</set>
+
+									<for from="0" to="2" var="i">
+										<set var="this.currentTitleSum[$i]">$($this.currentTitleSum[$i] + $item.nettotal)</set>
+									</for>
+
+									<math:inc var="countPos" />
+									<set var="item.pos">$countPos</set>
+
+									<call func="this.fireEvent">
+										<param name="event">beforeItem</param>
+										<param name="item" var="item" />
+									</call>
+									<if value1="$item.skip">
+										<call func="this.blockItemRow">
+											<param name="item" var="item" />
+										</call>
+									<else>
+										<math:dec var="countPos" />
+									</else>
+									</if>
+									<call func="this.fireEvent">
+										<param name="event">afterItem</param>
+										<param name="item" var="item" />
+									</call>
+								</case>
+								<case value="1">
+									<call func="this.fireEvent">
+										<param name="event">beforeText</param>
+										<param name="item" var="item" />
+									</call>
+									<if value1="$item.skip">
+										<call func="this.blockItemText">
+											<param name="item" var="item" />
+										</call>
+									</if>
+									<call func="this.fireEvent">
+										<param name="event">afterText</param>
+										<param name="item" var="item" />
+									</call>
+								</case>
+								<case value="2">
+									<set var="item.nettotal">$(-1 * $item.value)</set>
+									<set var="item.taxamount">$($item.nettotal * $item.taxrate / 100)</set>
+									<set var="item.discountamount">0</set>
+									<set var="this.taxes[$item.taxrate]">$($this.taxes[$item.taxrate] + $item.taxamount)</set>
+									<set var="this.taxAmounts[$item.taxrate]">$($this.taxAmounts[$item.taxrate] + $item.nettotal)</set>
+									<set var="this.nettotal">$($this.nettotal + $item.nettotal)</set>
+
+									<for from="0" to="2" var="i">
+										<set var="this.currentTitleSum[$i]">$($this.currentTitleSum[$i] + $item.nettotal)</set>
+									</for>
+
+									<math:inc var="countPos" />
+									<set var="item.pos">$countPos</set>
+
+									<call func="this.fireEvent">
+										<param name="event">beforeItem</param>
+										<param name="item" var="item" />
+									</call>
+									<if value1="$item.skip">
+										<call func="this.blockItemCoupon">
+											<param name="item" var="item" />
+										</call>
+									<else>
+										<math:dec var="countPos" />
+									</else>
+									</if>
+									<call func="this.fireEvent">
+										<param name="event">afterItem</param>
+										<param name="item" var="item" />
+									</call>
+								</case>
+								<default>
+									<call func="this.fireEvent">
+										<param name="event">beforeCustom</param>
+										<param name="item" var="item" />
+									</call>
+									<if value1="$item.skip">
+										<call func="this.blockItemCustom">
+											<param name="item" var="item" />
+										</call>
+									</if>
+									<call func="this.fireEvent">
+										<param name="event">afterCustom</param>
+										<param name="item" var="item" />
+									</call>
+								</default>
+							</switch>
+							<call func="this.fireEvent">
+								<param name="event">afterRow</param>
+								<param name="item" var="item" />
+							</call>
+						</foreach>
+						<call func="this.fireEvent">
+							<param name="event">beforeTotal</param>
+						</call>
+						<set var="this.isTable" />
+						<call func="this.blockTotal" />
+						<call func="this.fireEvent">
+							<param name="event">afterTotal</param>
+						</call>
+						<call func="this.blockOutro" />
+					</pdf:style>
+				</pdf:body>
+			</pdf:section>
+			<call func="this.fireEvent">
+				<param name="event">afterDocument</param>
+			</call>
+		</pdf:document>
+
+		<is var="templateTempFile" type="non-empty">
+			<temp:delete id="$templateTempFile" />
+		</is>
+	</method>
+
+	<!--
+		Add default events
+	-->
+	<method name="defaultEvents">
+		<!--
+			Display the currency after the intro
+		-->
+		<function var="this.events.afterIntro.currency">
+			<pdf:style fontsize="$this.fontsize" fontstyle="B">
+				<set var="info">$L(conditions.currency, {"currency": "$this.trans.currency"})</set>
+				<if value1="$info">
+					<pdf:block>Currency: $this.trans.currency</pdf:block>
+				<else>
+					<pdf:block>$info</pdf:block>
+				</else>
+				</if>
+				<pdf:linebreak offset="2" />
+			</pdf:style>
+		</function>
+
+		<!--
+			Display the payment conditions, etc. before the outro
+		-->
+		<function var="this.events.beforeOutro.conditions">
+			<array var="values">
+				<item key="$L(conditions.payment)">$APPSETTINGS[$this.umi].paymentconditions[$this.lang][$this.extdata.paymentconditions]</item>
+				<item key="$L(conditions.delivery)">$APPSETTINGS[$this.umi].deliveryconditions[$this.lang][$this.extdata.deliveryconditions]</item>
+				<item key="$L(conditions.method)">$APPSETTINGS[$this.umi].paymentmethods[$this.lang][$this.extdata.paymentmethod]</item>
+				<item key="$L(field.vatid)">$this.account.extdata.vatID</item>
+			</array>
+
+			<pdf:linebreak offset="5" />
+
+			<call func="this.listDetails">
+				<param name="values" var="values" />
+				<param name="widthLabel">45</param>
+				<param name="widthValue">120</param>
+			</call>
+		</function>
+
+		<!--
+			Perform sum-ups before title sections
+		-->
+		<function var="this.events.beforeText.sumups">
+			<switch value="$item.variant">
+				<case value="2"> <!-- Display a sub title (Variant 2) -->
+					<call func="this.sumupSection">
+						<param name="level">2</param>
+						<param name="title">$item.text</param>
+					</call>
+				</case>
+				<case value="3"> <!-- Display a title (Variant 3) -->
+					<call func="this.sumupSection">
+						<param name="level">1</param>
+						<param name="title">$item.text</param>
+					</call>
+				</case>
+				<case value="4"> <!-- Display a supertitle (Variant 4) -->
+					<call func="this.sumupSection">
+						<param name="level">0</param>
+						<param name="title">$item.text</param>
+					</call>
+				</case>
+			</switch>
+		</function>
+
+		<!--
+			Executed before the total block is executed
+		-->
+		<function var="this.events.beforeTotal.sumups">
+			<call func="this.sumupSection" var="res" />
+			<if value1="$res" value2="1">
+				<pdf:linebreak offset="2" />
+			</if>
+		</function>
+
+		<!--
+			Executed before the item block is executed
+		-->
+		<function var="this.events.beforeRow.pagebreak">
+			<set var="limit">$this.pagebreaklimit_n</set>
+
+			<pdf:getpos var_page="page" var_y="y" />
+			<if value1="$page" value2="1">
+				<set var="limit">$this.pagebreaklimit_1</set>
+			</if>
+
+			<if value1="$y" value2="$limit" func="&gt;=">
+				<call func="this.pagebreak" />
+			</if>
+		</function>
+
+		<!--
+			Executed before the total block is executed
+		-->
+		<function var="this.events.beforeTotal.pagebreak">
+			<pdf:getpos var_y="y" />
+			<if value1="$y" value2="250" func="&gt;=">
+				<call func="this.pagebreak" />
+			</if>
+		</function>
+
+		<!--
+			Executed before the item block is executed
+		-->
+		<function var="this.events.afterRow.separator">
+			<if value1="$item.skip" value2="1">
+				<return />
+			</if>
+			<pdf:style border="T" borderwidth="0.1" bordercolor="#686868" fontsize="1">
+				<pdf:linebreak offset="2" />
+				<pdf:row leftmargin="0" rightmargin="0">
+					<pdf:col width="$this.widthTotal" height="1" />
+				</pdf:row>
+			</pdf:style>
+		</function>
+
+		<!--
+			Execute special commands before the item text
+		-->
+		<function var="this.events.beforeText.commands">
+			<tolower var="text">$item.text</tolower>
+			<switch value="$text">
+				<case value="pagebreak">
+					<set var="item.skip">1</set>
+					<call func="this.pagebreak" />
+				</case>
+				<case value="sumup-subtitle">
+					<set var="item.skip">1</set>
+					<call func="this.sumupSection">
+						<param name="level">2</param>
+					</call>
+				</case>
+				<case value="sumup-title">
+					<set var="item.skip">1</set>
+					<call func="this.sumupSection">
+						<param name="level">1</param>
+					</call>
+				</case>
+				<case value="sumup-supertitle">
+					<set var="item.skip">1</set>
+					<call func="this.sumupSection">
+						<param name="level">0</param>
+					</call>
+				</case>
+				<case value="sumup">
+					<set var="item.skip">1</set>
+					<call func="this.sumupSection" />
+				</case>
+			</switch>
+		</function>
+
+		<!--
+			Add a bold line before the sumup
+		-->
+		<function var="this.events.beforeTotal.separator">
+			<pdf:style border="T" borderwidth="0.5" bordercolor="#000000" fontsize="1">
+				<pdf:row leftmargin="0" rightmargin="0">
+					<pdf:col width="$this.widthTotal" height="2" />
+				</pdf:row>
+			</pdf:style>
+		</function>
+	</method>
+
+	<method name="initEvents" /> <!-- Additional events -->
+</class>
+
+</ixml>

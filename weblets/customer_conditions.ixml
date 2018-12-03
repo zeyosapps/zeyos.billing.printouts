@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ixml SYSTEM "http://www.ixmldev.com/schema/ixml.dtd">
+<ixml>
+
+<if value1="$APPSETTINGS.showForm" value2="1" func="!=">
+	<break />
+</if>
+<if value1="$APPSETTINGS.showFormCustomer" value2="1" func="!=">
+	<break />
+</if>
+
+<include id=".form-conditions">
+	<param name="UMI">billing</param>
+</include>
+
+<hbox>
+	<vbox width="33%">
+		<textbox id="vatID" label="$L(field.vatid)" width="300"></textbox>
+	</vbox>
+	<vbox width="34%">
+		<textbox id="taxID" label="$L(field.taxcode)" width="300"></textbox>
+	</vbox>
+	<vbox width="33%">
+		<textbox id="registerNo" label="$L(field.registerid)" width="300"></textbox>
+	</vbox>
+</hbox>
+
+</ixml>

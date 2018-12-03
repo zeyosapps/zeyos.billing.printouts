@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ixml SYSTEM "http://www.ixmldev.com/schema/ixml.dtd">
+<ixml>
+
+<db:select var_result="templates" type="assoc">
+	<db:table>objects</db:table>
+	<db:is field="entity">printout_templates</db:is>
+</db:select>
+
+<foreach var="templates" var_value="template">
+	<extdata:get entity="objects" id="$template.ID" var="ext" />
+	<if value1="$ext.default" value2="1">
+		<if value1="$ext.type" value2="0">
+			<debug:dump var="template"/>
+			<debug:dump var="ext"/>
+		</if>
+	</if>
+	<!--
+	<if value1="$ext.name" func="!=">
+		<db:set entity="objects" id="$template.ID">
+			<db:data field="name">$ext.name</db:data>
+		</db:set>
+	</if>
+	-->
+</foreach>
+
+<exit/>
+
+<array var="types">
+	<item>Billing quote</item>
+	<item>Billing order</item>
+	<item>Billing delivery</item>
+	<item>Billing invoice</item>
+	<item>Billing credit</item>
+	<item>Procurement request</item>
+	<item>Procurement order</item>
+	<item>Procurement delivery</item>
+	<item>Procurement invoice</item>
+	<item>Procurement credit</item>
+	<item>Initial Reminder</item>
+	<item>Initial Notice</item>
+	<item>Intermediate Notice</item>
+	<item>Final Notice</item>
+</array>
+
+<db:transaction>
+	<db:select var_result="templates" type="assoc">
+		<db:table>extdata</db:table>
+		<db:is field="entity">printout_templates</db:is>
+		<db:orderby>
+			<db:orderfield>index</db:orderfield>
+		</db:orderby>
+	</db:select>
+	
+	<array var="data" />
+	<foreach var="templates" var_value="template">
+		<set var="data[$template.index][$template.name]">$template.value</set>
+	</foreach>
+
+	<foreach var="data" var_value="template">
+		<debug:output>Name: $types[$template.type]</debug:output>
+		<debug:dump var="template"/>
+		
+		<db:insert table="objects" var="ID">
+			<db:data field="entity">printout_templates</db:data>
+			<db:data field="name">$types[$template.type]</db:data>
+		</db:insert>
+		<extdata:set entity="objects" id="$ID" var_data="template" />
+	</foreach>
+</db:transaction>
+
+</ixml>

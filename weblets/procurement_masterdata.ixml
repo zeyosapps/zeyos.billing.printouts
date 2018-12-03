@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ixml SYSTEM "http://www.ixmldev.com/schema/ixml.dtd">
+<ixml>
+
+<include id=".form-conditions">
+	<param name="UMI">procurement</param>
+</include>
+
+</ixml>

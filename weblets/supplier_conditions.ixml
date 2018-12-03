@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ixml SYSTEM "http://www.ixmldev.com/schema/ixml.dtd">
+<ixml>
+
+<if value1="$APPSETTINGS.showForm" value2="1" func="!=">
+	<break />
+</if>
+<if value1="$APPSETTINGS.showFormSupplier" value2="1" func="!=">
+	<break />
+</if>
+
+<include id=".form-conditions">
+	<param name="UMI">procurement</param>
+</include>
+
+</ixml>

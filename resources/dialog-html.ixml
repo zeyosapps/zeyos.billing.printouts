@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ixml SYSTEM "http://www.ixmldev.com/schema/ixml.dtd">
+<ixml>
+
+<!-- Load the print-out library, including language file and session -->
+<include id=".lib" />
+
+<!-- Get the transaction details -->
+<if value1="$entity" value2="dunning" func="=*">
+	<set var="entity">dunning</set>
+	<db:get entity="dunning" id="$REQUEST.id" var="self" var_fields="field">
+		<db:field alias="transactionnum">dunningnum</db:field>
+		<db:field>level</db:field>
+	</db:get>
+	<set var="self.type">$(10 + $self.level)</set>
+	<set var="transnum">dunning</set>
+<else>
+	<set var="entity">transactions</set>
+	<db:get entity="transactions" id="$REQUEST.id" var="self" var_fields="field">
+		<db:field>type</db:field>
+		<db:field>transactionnum</db:field>
+	</db:get>
+	<set var="transnum">transaction</set>
+</else>
+</if>
+
+<!-- Initialize the PDF filename based on the transaction number -->
+<if value1="$self.transactionnum" func="!=">
+	<set var="transnum">$self.transactionnum</set>
+</if>
+<replace pattern="/[^a-z0-9_.-]/i" var="filename">$transnum</replace>
+
+<!-- Retrieve Intro and Outro -->
+<extdata:get entity="$entity" id="$REQUEST.id" var="extdata">
+	<extdata:field>intro</extdata:field>
+	<extdata:field>outro</extdata:field>
+</extdata:get>
+
+<!-- Initialize the print-out template default values -->
+<set var="temp">false</set>
+<if value1="$extdata.intro">
+	<if value1="$extdata.outro">
+		<db:select var_result="default" type="self">
+			<db:fields>
+				<db:field>a.ID</db:field>
+				<db:field>a.name</db:field>
+			</db:fields>
+			<db:table alias="a">objects</db:table>
+			<db:join>
+				<db:inner alias="b" table="extdata">
+					<db:is field="b.entity">objects</db:is>
+					<db:is field1="a.ID" field2="b.index" />
+				</db:inner>
+				<db:inner alias="c" table="extdata">
+					<db:is field="c.entity">objects</db:is>
+					<db:is field1="a.ID" field2="c.index" />
+				</db:inner>
+			</db:join>
+			<db:is field="a.entity">printout_templates</db:is>
+			<db:is field="b.name">type</db:is>
+			<db:is field="b.value">$self.type</db:is>
+			<db:is field="c.name">default</db:is>
+			<db:is field="c.value">1</db:is>
+		</db:select>
+		<if value1="$default.ID" func="!=">
+			<extdata:get entity="objects" id="$default.ID" var="extdata">
+				<extdata:field>intro</extdata:field>
+				<extdata:field>outro</extdata:field>
+			</extdata:get>
+		</if>
+		<encode:json var="default" var_result="temp" />
+	</if>
+</if>
+
+<!-- Initialize the HTML frame -->
+<array var="params">
+	<array key="includeCss">
+		<item>https://cdn.jsdelivr.net/gh/zeyosinc/gx-zeyos@3.0/dist/gx-zeyos.css</item>
+	</array>
+	<array key="includeJs">
+		<item>https://cdn.jsdelivr.net/gh/zeyosinc/gx-mootools@1.4/mootools-core-1.4.5-full-nocompat-yc.js</item>
+		<item>https://cdn.jsdelivr.net/gh/zeyosinc/gx-mootools@1.4/mootools-more-1.4.0.1-nocompat-yc.js</item>
+		<item>https://cdn.jsdelivr.net/gh/zeyosinc/gx-core@1.0/dist/gx-core.min.js</item>
+		<item>https://cdn.jsdelivr.net/gh/zeyosinc/gx-zeyos@3.0/dist/gx-zeyos.min.js</item>
+		<item>$PATH_EXTERN$api.js</item> <!-- ZeyOS API -->
+	</array>
+	<item key="css">
+	body { overflow: hidden; }
+	</item>
+	<array key="js">
+		<item>
+		var ID      = $REQUEST.id;
+		var SELFNS  = '$SELFNS$';
+		var TYPE    = '$self.type';
+		var ENTITY  = '$entity';
+		var TEMP    = $temp;
+		</item>
+		<item>
+			<include id=".controller" />
+		</item>
+		<item>
+			<include id="zeyos.locale.js" />
+		</item>
+	</array>
+
+	<item key="content"><![CDATA[
+		<section class="popbody m-5 p_b-10">
+			<div class="bg-F p-10 fs-18 br_t-5">$L(dialog.printout)</div>
+			<div class="bg-F b_b-1 p-5" style="height: 40px">
+				<div id="divInsert">
+					<div id="mnuTemplate" class="fl-l"></div>
+					<div id="mnuLanguage" class="fl-l m_l-10"></div>
+
+					<!-- <button id="btnSaveTemplate" class="fl-l" type="button">$L(dialog.template.remove)</button> -->
+					<button id="btnSaveTemplate" class="fl-r" type="button">$L(dialog.template.save)</button>
+					<div class="clr"></div>
+				</div>
+				<div id="divNew" style="display:none">
+					<div class="fl-l fb p_r-10 p_t-5">Name</div>
+					<input type="text" id="txtNewName" class="fl-l" style="width: 200px;" />
+					<button id="btnNewSave" class="fl-r em fb m_l-10" type="button">$L(action.save)</button>
+					<button id="btnNewCancel" class="fl-r" type="button">$L(action.abort)</button>
+					<div id="chkDefault" class="fl-r m_r-10"></div>
+					<div class="fl-r fb p_r-10 p_t-5">$L(dialog.template.default)</div>
+					<div class="clr"></div>
+				</div>
+			</div>
+			<form action="../remotecall/$SELFNS$.print/print/$entity/$REQUEST.id/$filename$.pdf" method="POST" target="_blank">
+				<div style="height: 460px; padding-top: 10px; overflow: auto;">
+					<input type="hidden" name="options" id="hdnOptions" />
+					<input type="hidden" name="attach" id="hdnAttach" />
+					<input type="hidden" name="lang" id="hdnLanguage" />
+					<input type="hidden" name="sendmail" id="hdnSendMail" />
+					<input type="hidden" name="mailtemplate" id="hdnMailTemplate" />
+
+					<textarea id="txtIntro" name="intro" style="width:100%; height: 150px;">$extdata.intro</textarea>
+					<textarea id="txtOutro" name="outro" style="width:100%; height: 150px;">$extdata.outro</textarea>
+					<section id="sectOptions" class="bg-E p-7"></section>
+					<div class="clr"></div>
+				</div>
+				<div class="mi_t-10 b_t-1">
+					<div id="chkAttach" class="fl-l m_r-10"></div>
+					<div class="fl-l fb p_r-10 p_t-5 m_r-10">$L(dialog.attach)</div>
+					<div id="chkSendMail" class="fl-l m_r-10"></div>
+					<div class="fl-l fb p_r-10 p_t-5 m_r-5">$L(dialog.email)</div>
+					<div class="fl-l" id="mnuMailTemplate"></div>
+					<button id="btnPrint" class="fl-r em fb" type="submit">$L(dialog.print)</button>
+					<button id="btnSave" class="fl-r" type="button">$L(action.save)</button>
+					<!-- <button id="btnClose" class="fl-r" type="button">$L(action.close)</button> -->
+					<div class="clr"></div>
+				</div>
+			</form>
+		</section>
+	]]></item>
+</array>
+
+<include id="zeyos.lib.html" var="Html" />
+<new class="Html.Boilerplate" var="page" var_params="params" />
+<output>$page.compile()</output>
+
+</ixml>

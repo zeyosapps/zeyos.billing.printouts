@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ixml SYSTEM "http://www.ixmldev.com/schema/ixml.dtd">
+<ixml>
+
+<class var="return">
+	<extends class="Template" />
+
+	<property name="widthCol0">8</property>  <!-- Pos -->
+	<property name="widthCol1">24</property> <!-- Invoice -->
+	<property name="widthCol2">23</property> <!-- Date -->
+	<property name="widthCol3">23</property> <!-- Due date -->
+	<property name="widthCol4">24</property> <!-- Dunning Charges -->
+	<property name="widthCol5">24</property> <!-- Gross -->
+	<property name="widthCol6">24</property> <!-- Paid -->
+	<property name="widthCol7">24</property> <!-- Outstanding -->
+
+	<constructor>
+		<set var="this.widthColSumTotal">$($this.widthCol0 + $this.widthCol1 + $this.widthCol2 + $this.widthCol3)</set>
+		<set var="this.widthTotal">$($this.widthColSumTotal + $this.widthCol4 + $this.widthCol5 + $this.widthCol6 + $this.widthCol7)</set>
+
+		<array var="this.printOptions">
+			<array key="blank">
+				<item key="type">checkbox</item>
+				<item key="label">$L(dialog.printblank)</item>
+			</array>
+		</array>
+	</constructor>
+
+	<!--
+		Display the item header
+	-->
+	<method name="blockItemHeader">
+		<call func="this.fireEvent">
+			<param name="event">beforeItemHeader</param>
+		</call>
+
+		<pdf:style border="T" borderwidth="0.3" fontsize="1">
+			<pdf:row leftmargin="0" rightmargin="0">
+				<pdf:col width="$this.widthTotal" height="2" />
+			</pdf:row>
+		</pdf:style>
+		<pdf:style fontsize="$this.fontsize" fontstyle="B">
+			<pdf:row>
+				<pdf:col width="$this.widthCol0">$L(item.pos)</pdf:col>
+				<pdf:col width="$this.widthCol1">$L(type.invoice.no)</pdf:col>
+				<pdf:col width="$this.widthCol2">$L(field.date)</pdf:col>
+				<pdf:col width="$this.widthCol3">$L(field.duedate)</pdf:col>
+				<pdf:style align="R">
+					<pdf:col width="$this.widthCol4">$L(amount.dunning)</pdf:col>
+					<pdf:col width="$this.widthCol5">$L(amount.total)</pdf:col>
+					<pdf:col width="$this.widthCol6">$L(amount.paid)</pdf:col>
+					<pdf:col width="$this.widthCol7">$L(amount.balance)</pdf:col>
+				</pdf:style>
+			</pdf:row>
+		</pdf:style>
+		<pdf:style border="B" borderwidth="0.5" fontsize="1">
+			<pdf:row leftmargin="0" rightmargin="0">
+				<pdf:col width="$this.widthTotal" height="2" />
+			</pdf:row>
+		</pdf:style>
+		<pdf:linebreak offset="2" />
+
+		<call func="this.fireEvent">
+			<param name="event">afterItemHeader</param>
+		</call>
+	</method>
+
+	<!--
+		Adds an item row
+		@param item
+	-->
+	<method name="blockItemCustom">
+		<math:inc var="this.countTrans" />
+		<pdf:style valign="M" fontsize="$this.fontsize" bgcolor="$this.altBg">
+			<pdf:row leftmargin="0" rightmargin="0">
+				<pdf:col width="$this.widthCol0">$this.countTrans</pdf:col>
+				<pdf:col width="$this.widthCol1">$item.transactionnum</pdf:col>
+				<pdf:col width="$this.widthCol2">
+					<date:format format="$L(date.full)">$item.date</date:format>
+				</pdf:col>
+				<pdf:col width="$this.widthCol3">
+					<date:format format="$L(date.full)">$item.duedate</date:format>
+				</pdf:col>
+				<pdf:style align="R">
+					<pdf:col width="$this.widthCol4">$this.formatAmount($item.charges)</pdf:col>
+					<pdf:col width="$this.widthCol5">$this.formatAmount($($item.netamount + $item.tax + $item.charges))</pdf:col>
+					<pdf:col width="$this.widthCol6">$this.formatAmount($item.payments)</pdf:col>
+					<pdf:col width="$this.widthCol7">$this.formatAmount($($item.netamount + $item.tax + $item.charges - $item.payments))</pdf:col>
+				</pdf:style>
+			</pdf:row>
+		</pdf:style>
+
+		<set var="this.totalNet">$($this.totalNet + $item.netamount)</set>
+		<set var="this.totalCharges">$($this.totalCharges + $item.charges)</set>
+		<set var="this.totalGross">$($this.totalGros + $item.netamount + $item.tax + $item.charges)</set>
+		<set var="this.totalPayments">$($this.totalPayments + $item.payments)</set>
+		<set var="this.totalBalance">$($this.totalBalance + $item.netamount + $item.tax + $item.charges - $item.payments)</set>
+	</method>
+
+	<!--
+		Adds the sum-up section
+	-->
+	<method name="blockTotal">
+		<pdf:style fontsize="$this.fontsize" fontstyle="B">
+			<pdf:row leftmargin="$this.widthColSumTotal">
+				<pdf:style align="R">
+					<pdf:col width="$this.widthCol4">$this.formatAmount($this.totalCharges)</pdf:col>
+					<pdf:col width="$this.widthCol5">$this.formatAmount($this.totalGross)</pdf:col>
+					<pdf:col width="$this.widthCol6">$this.formatAmount($this.totalPayments)</pdf:col>
+					<pdf:col width="$this.widthCol7">$this.formatAmount($this.totalBalance)</pdf:col>
+				</pdf:style>
+			</pdf:row>
+		</pdf:style>
+	</method>
+</class>
+
+</ixml>
