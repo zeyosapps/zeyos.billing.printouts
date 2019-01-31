@@ -298,7 +298,7 @@
 				<if value1="$REQUEST.lang" func="!=">
 					<set var="LANGUAGE.Localizer.lang">$REQUEST.lang</set>
 					<call func="LANGUAGE.Localizer.merge">
-						<param name="src">net.zeyon.lang.common-1000</param>
+						<param name="src">zeyos.locale.common</param>
 					</call>
 					<call func="LANGUAGE.Localizer.merge">
 						<param name="src">$SELFNS$</param>
