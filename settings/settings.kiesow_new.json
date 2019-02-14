@@ -1,0 +1,54 @@
+{
+  "token": "",
+  "billing": {
+    "paymentconditions": {
+      "de_DE": {
+        "atonce": "Sofort, ohne Abzug",
+        "dp50": "50% Anzahlung bei Auftrag, 50% bei Fertigstellung",
+        "monthly  ": "Monatlich gem. Leistungsnachweis",
+        "inadvance": "Vorauskasse",
+        "7days": "7 Tage nach Rechnungsdatum",
+        "14days": "14 Tage nach Rechnungsdatum",
+        "30days": "30 Tage nach Rechnungsdatum"
+      },
+      "en_US": {
+        "atonce": "At once",
+        "dp50": "50% downpayment upon order, 50% after completion",
+        "monthly  ": "Monthly",
+        "inadvance": "In advance",
+        "7days": "7 days after invoice date",
+        "14days": "14 days after invoice date",
+        "30days": "30 days after invoice date"
+      }
+    },
+    "paymentmethods": {
+      "de_DE": {
+        "trans": "Überweisung",
+        "debit": "Lastschrift",
+        "paypal": "PayPal",
+        "creditcard": "Kreditkarte",
+        "cash": "Bar"
+      },
+      "en_US": {
+        "trans": "Bank transfer",
+        "debit": "Direct Debit",
+        "paypal": "PayPal",
+        "creditcard": "Credit card",
+        "cash": "Cash"
+      }
+    },
+    "deliveryconditions": {
+      "de_DE": {},
+      "en_US": {}
+    }
+  },
+  "languages": [
+    "de_DE",
+    "en_US",
+    "es_ES"
+  ],
+  "defaultlang": "en_US",
+  "showForm": "0",
+  "basepdf": "kiesow.printouts.basepdf",
+  "namespace": "kiesow.printouts"
+}

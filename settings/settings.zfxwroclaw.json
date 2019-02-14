@@ -1,0 +1,59 @@
+{
+    "token": "OIHJf973h97fs",
+    "billing": {
+        "paymentconditions": {
+            "de_DE": {
+                "14tage": "14 Tage ab Rechnungsdatum",
+                "30tage": "30 Tage ab Rechnungsdatum",
+                "45tage": "45 Tage ab Rechnungsdatum",
+                "60tage": "60 Tage ab Rechnungsdatum",
+                "90tage": "90 Tage ab Rechnungsdatum",
+                "sicht": "Bei Sicht",
+                "bezahlt": "Bereits bezahlt",
+                "VOR": "Vorauskasse"
+            },
+            "en_US": {
+                "14tage": "14 days after invoice date",
+                "30tage": "30 days after invoice date",
+                "45tage": "45 days after invoice date",
+                "60tage": "60 days after invoice date",
+                "90tage": "90 days after invoice date",
+                "sicht": "At sight",
+                "bezahlt": "Already paid",
+                "VOR": "In advance"
+            }
+        },
+        "paymentmethods": {
+            "de_DE": {
+                "UE": "Überweisung",
+                "BAR": "Barzahlung",
+                "NN": "Per Nachnahme",
+                "LS": "Lastschrift",
+                "RAT": "Ratenzahlung"
+            },
+            "en_US": {
+                "UE": "Bank transfer",
+                "BAR": "Cash",
+                "NN": "Cash on delivery",
+                "LS": "Direct Debit",
+                "RAT": "By installment"
+            }
+        },
+        "deliveryconditions": {
+            "de_DE": {},
+            "en_US": {}
+        }
+    },
+    "languages": [
+        "de_DE",
+        "en_US",
+        "es_ES"
+    ],
+    "defaultlang": "en_US",
+    "showForm": "0",
+    "showFormCustomer": "0",
+    "namespace": "zfxgmbh.printouts",
+    "templates": {
+      "base": "zfxwroclaw"
+    }
+}
