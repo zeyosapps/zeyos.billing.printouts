@@ -132,7 +132,7 @@ window.addEvent('domready', function() {
 		return JSON.encode(res);
 	}
 	
-	var chkSendMail = new gx.zeyos.Toggle('chkSendMail', {'value': false});
+	var chkSendMail = new gx.zeyos.Toggle('chkSendMail', {'on': !!PRESETS.sendMail });
 	var mnuMailTemplate = new gx.zeyos.Dropdown($('mnuMailTemplate'), {
 		'label': _('dialog.email_template'),
 		'resettable': true,
@@ -144,11 +144,16 @@ window.addEvent('domready', function() {
 		mnuMailTemplate.setItems(res.list);
 		if (res.current != null && res.current.id != null)
 			mnuMailTemplate.selectItem(res.current.id, res.current.label);
+		else if (PRESETS.mailTemplate)
+			mnuMailTemplate.selectItem(PRESETS.mailTemplate.id, PRESETS.mailTemplate.label);
 	});
 	
 	var chkAttach = new gx.zeyos.Toggle('chkAttach', {'value': false});
+	/*
 	if (TYPE == 2 || TYPE == 3)
 		chkAttach.setChecked();
+	*/
+	
 	$('btnSaveTemplate').addEvent('click', function() {
 		divInsert.setStyle('display', 'none');
 		divNew.setStyle('display', 'block');

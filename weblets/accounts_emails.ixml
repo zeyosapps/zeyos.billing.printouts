@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ixml SYSTEM "https://developers.zeyos.com/schema/ixml.dtd">
+<ixml
+	xmlns="https://developers.zeyos.com/schema/ixml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://developers.zeyos.com/schema/ixml https://developers.zeyos.com/schema/ixml.xsd">
+
+	<!-- Load the language files -->
+	<array var="params">
+		<item key="lang">$APPSETTINGS.defaultlang</item>
+		<array key="accepted">
+			<item>en_US</item>
+			<item>de_DE</item>
+			<item>es_ES</item>
+		</array>
+		<array key="load">
+			<item>$SELFNS</item>
+		</array>
+	</array>
+	<include id="zeyos.locale.loader" var_params="params" />
+
+	<title>$L(partner.customer.name)</title>
+
+	<hbox>
+		<textbox id="billing_email_0" label="$L(type.quote.name)" width="200" />
+		<textbox id="billing_email_1" label="$L(type.order.name)" width="200" />
+		<textbox id="billing_email_2" label="$L(type.delivery.name)" width="200" />
+		<textbox id="billing_email_3" label="$L(type.invoice.name)" width="200" />
+		<textbox id="billing_email_4" label="$L(type.credit.name)" width="200" />
+	</hbox>
+
+	<title>$L(partner.supplier.name)</title>
+
+	<hbox>
+		<textbox id="billing_email_5" label="$L(type.srequest.name)" width="200" />
+		<textbox id="billing_email_6" label="$L(type.sorder.name)" width="200" />
+		<textbox id="billing_email_7" label="$L(type.sdelivery.name)" width="200" />
+		<textbox id="billing_email_8" label="$L(type.sinvoice.name)" width="200" />
+		<textbox id="billing_email_9" label="$L(type.scredit.name)" width="200" />
+	</hbox>
+
+	<title>$L(type.dunning.name)</title>
+
+	<hbox>
+		<textbox id="billing_email_10" label="$L(dunning.title.reminder.name)" width="200" />
+		<textbox id="billing_email_11" label="$L(dunning.title.dunning1.name)" width="200" />
+		<textbox id="billing_email_12" label="$L(dunning.title.dunning2.name)" width="200" />
+		<textbox id="billing_email_13" label="$L(dunning.title.dunning3.name)" width="200" />
+		<placeholder width="200" />
+	</hbox>
+
+</ixml>

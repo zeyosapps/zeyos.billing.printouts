@@ -179,19 +179,14 @@
 			</extdata:get>
 
 			<if value1="$ext.lang">
-				<db:select var_result="ext" type="self">
-					<db:fields>
-						<db:field alias="lang">b.value</db:field>
-					</db:fields>
-					<db:table alias="a">transactions</db:table>
-					<db:join>
-						<db:inner alias="b" table="extdata">
-							<db:is field="entity">accounts</db:is>
-							<db:is field1="a.account" field2="b.index" />
-							<db:is field="name">lang</db:is>
-						</db:inner>
-					</db:join>
-				</db:select>
+				<db:get entity="$getEntity($ENTITY)" id="$ID" var="trans">
+					<db:field>account</db:field>
+				</db:get>
+				<if value1="$trans.account" func="!=">
+					<extdata:get entity="accounts" id="$trans.account" var="ext">
+						<extdata:field>lang</extdata:field>
+					</extdata:get>
+				</if>
 			</if>
 
 			<if value1="$ext.lang">
@@ -260,7 +255,7 @@
 			</try>
 
 			<set var="self.type">10</set>
-			<if value1="$ENTITY" func="transactions">
+			<if value1="$ENTITY" value2="transactions">
 				<db:get entity="transactions" id="$ID" var="self">
 					<db:field>type</db:field>
 				</db:get>
@@ -279,289 +274,12 @@
 			</foreach>
 		</rest:resource>
 		<rest:resource route="/print/:ENTITY/:ID/:FILENAME" method="POST">
-			<set var="silent">1</set>
-			<try>
-				<call func="getTransaction" var="self">
-					<param name="entity" var="ENTITY" />
-					<param var="ID" />
-				</call>
-
-				<!-- Save the form settings -->
-				<extdata:set entity="$self.entity" id="$ID">
-					<extdata:data field="intro">$REQUEST.intro</extdata:data>
-					<extdata:data field="outro">$REQUEST.outro</extdata:data>
-					<extdata:data field="lang">$REQUEST.lang</extdata:data>
-					<extdata:data field="options">$REQUEST.options</extdata:data>
-				</extdata:set>
-
-				<!-- Initialize the language -->
-				<if value1="$REQUEST.lang" func="!=">
-					<set var="LANGUAGE.Localizer.lang">$REQUEST.lang</set>
-					<call func="LANGUAGE.Localizer.merge">
-						<param name="src">zeyos.locale.common</param>
-					</call>
-					<call func="LANGUAGE.Localizer.merge">
-						<param name="src">$SELFNS$</param>
-					</call>
-				</if>
-
-				<decode:json var="options">$REQUEST.options</decode:json>
-
-				<call func="getPrintOut" var="doc">
-					<param name="ID">$ID</param>
-					<param name="entity">$ENTITY</param>
-					<param name="intro">$REQUEST.intro</param>
-					<param name="outro">$REQUEST.outro</param>
-					<param var="options" />
-				</call>
-
-				<set var="pdf">$doc.create()</set>
-
-				<!-- Create a mindlog entry -->
-				<if value1="$REQUEST.attach" value2="1">
-					<extdata:get entity="transactions" id="$ID" var="ext">
-						<extdata:field>packer</extdata:field>
-					</extdata:get>
-					<db:set entity="records" var="recordId">
-						<is var="self.ownergroup">
-							<db:data field="ownergroup">$self.ownergroup</db:data>
-						</is>
-						<db:data field="flag">1</db:data>
-						<db:data field="index">$ID</db:data>
-						<db:data field="entity">transactions</db:data>
-						<db:data field="creationdate">$DATENOW</db:data>
-						<db:data field="lastmodified">$DATENOW</db:data>
-						<db:data field="date">$DATENOW</db:data>
-						<if value1="$ext.packer" func="!=">
-							<db:data field="creator">$ext.packer</db:data>
-							<else>
-								<if value1="$session.ID" func="!=">
-									<db:data field="creator">$session.ID</db:data>
-									<else>
-										<db:get entity="transactions" id="$ID" var="t">
-											<db:field>assigneduser</db:field>
-										</db:get>
-										<if value1="$t.assigneduser" func="!=">
-											<db:data field="creator">$t.assigneduser</db:data>
-										</if>
-									</else>
-								</if>
-							</else>
-						</if>
-					</db:set>
-					<db:set entity="files">
-						<db:data field="record">$recordId</db:data>
-						<db:data field="mimetype">application/pdf</db:data>
-						<db:data field="size">
-							<size>$pdf</size>
-						</db:data>
-						<db:data field="filename">$self.transactionnum$.pdf</db:data>
-						<db:data field="binfile">
-							<bin:write>$pdf</bin:write>
-						</db:data>
-					</db:set>
-				</if>
-
-				<!-- Send the PDF via e-mail -->
-				<if value1="$REQUEST.sendmail" value2="1">
-					<set var="subject">$self.transactionnum</set>
-					<decode:json var="settings">$session.settings</decode:json>
-
-					<!-- Geht the user's default message template -->
-					<set var="templateId">$settings.printout_mail_template</set>
-
-					<!-- Overwrite the message template, if a different one is selected -->
-					<if value1="$REQUEST.mailtemplate" func="!=">
-						<if value1="$REQUEST.mailtemplate" value2="$templateId" func="!=">
-							<set var="settings.printout_mail_template[$self.type]">$REQUEST.mailtemplate</set>
-							<set var="templateId">$REQUEST.mailtemplate</set>
-							<encode:json var="settings" var_result="JSON"/>
-							<if value1="$session.ID" func="!=">
-								<db:set entity="users" id="$session.ID">
-									<db:data field="settings"><encode:json var="settings"/></db:data>
-								</db:set>
-							</if>
-						</if>
-					</if>
-
-					<if value1="$templateId" func="!=">
-						<db:get entity="messages" id="$templateId" var="temp">
-							<db:field>binfile</db:field>
-						</db:get>
-						<if value1="$temp.binfile" func="!=">
-							<mail:parse var="temp">
-								<bin:read id="$temp.binfile" />
-							</mail:parse>
-							<set var="from">$temp.sender</set>
-							<if value1="$self.entity" value2="dunning">
-								<db:select var_result="transactionnums" type="list">
-									<db:fields>
-										<db:field>b.transactionnum</db:field>
-									</db:fields>
-									<db:table alias="a">dunning2transactions</db:table>
-									<db:join>
-										<db:inner alias="b" table="transactions" field1="a.transaction" field2="b.ID" />
-									</db:join>
-									<db:is field="a.dunning">$ID</db:is>
-								</db:select>
-							</if>
-
-							<set var="html">$temp.html.rawbody</set>
-
-				       <switch value="$temp.html.encoding">
-				        <case value="quoted-printable">
-				         <decode:quotedprint var="html">$html</decode:quotedprint>
-				        </case>
-
-				        <case value="base64">
-				         <decode:base64 var="html">$html</decode:base64>
-				        </case>
-				       </switch>
-
-				       <set var="text">$temp.text.rawbody</set>
-
-				       <switch value="$temp.text.encoding">
-				        <case value="quoted-printable">
-				         <decode:quotedprint var="text">$text</decode:quotedprint>
-				        </case>
-
-				        <case value="base64">
-				         <decode:base64 var="text">$text</decode:base64>
-				        </case>
-				       </switch>
-
-				       <array:join delimiter=", " var="transactionnums" var_result="transactionnums" />
-
-				       <replace value="%t" replacement="$self.transactionnum" var="subject">$temp.subject</replace>
-				       <replace value="%n" replacement="$transactionnums" var="subject">$subject</replace>
-
-				       <replace value="%t" replacement="$self.transactionnum" var="html">$html</replace>
-				       <replace value="%n" replacement="$transactionnums" var="html">$html</replace>
-
-				       <replace value="%t" replacement="$self.transactionnum" var="text">$text</replace>
-				       <replace value="%n" replacement="$transactionnums" var="text">$text</replace>
-						</if>
-					</if>
-
-					<if value1="$self.account" func="!=">
-						<db:select var_result="account" type="self">
-							<db:fields>
-								<db:field>b.email</db:field>
-							</db:fields>
-							<db:table alias="a">accounts</db:table>
-							<db:join>
-								<db:inner alias="b" table="contacts" field1="a.contact" field2="b.ID" />
-							</db:join>
-							<db:is field="a.ID">$self.account</db:is>
-						</db:select>
-						<if value1="$account.email" func="!=">
-							<set var="to">$account.email</set>
-						</if>
-					</if>
-
-					<function var="quoteAddress">
-						<set var="delim">&lt;</set>
-						<split delimiter="$delim" var="parts">$return</split>
-						<array:length var="parts" var_result="len" />
-						<if value1="$len" value2="2">
-							<mail:quote var="p">
-								<trim>$parts[0]</trim>
-							</mail:quote>
-							<set var="return">$p &lt;$parts[1]</set>
-						</if>
-					</function>
-
-					<mail:quote var="subject">$subject</mail:quote>
-					<date:format var="date" format="r">%DATENOW</date:format>
-					<array var="header">
-						<item>Subject: $subject</item>
-						<item>Date: $date</item>
-						<item>To: $quoteAddress($to)</item>
-						<item>From: $quoteAddress($from)</item>
-						<item>Content-Type: multipart/mixed; boundary="==--sdfmnsdfsdfmn--=="</item>
-						<item>MIME-Version: 1.0</item>
-					</array>
-
-					<mail:multipart var="rawbody" boundary="==--sdfmnsdfsdfmn--==">
-						<if value1="$text" func="!=">
-							<mail:part>
-								<mail:header>Content-Type: text/plain; charset=&quot;UTF-8&quot;&rn;Content-Transfer-Encoding: quoted-printable</mail:header>
-								<mail:body>
-									<encode:quotedprint>$text</encode:quotedprint>
-								</mail:body>
-							</mail:part>
-						</if>
-						<if value1="$html" func="!=">
-							<mail:part>
-								<mail:header>Content-Type: text/html; charset=&quot;UTF-8&quot;&rn;Content-Transfer-Encoding: quoted-printable</mail:header>
-								<mail:body>
-									<encode:quotedprint>$html</encode:quotedprint>
-								</mail:body>
-							</mail:part>
-						</if>
-						<mail:part>
-							<mail:header>Content-Type: application/pdf&rn;Content-Disposition:attachment; filename=&quot;$self.transactionnum$.pdf&quot;&rn;Content-Transfer-Encoding: base64</mail:header>
-							<mail:body>
-								<encode:base64>$pdf</encode:base64>
-							</mail:body>
-						</mail:part>
-					</mail:multipart>
-
-					<foreach var="header" var_value="v">
-						<concat var="rawheader">$v&rn;</concat>
-					</foreach>
-
-					<temp:write var="tempID">$rawheader$&rn;$rawbody</temp:write>
-
-					<mail:parse var="msg">$rawheader$&rn;$rawbody</mail:parse>
-
-					<if value1="$REQUEST.noforward" value2="1">
-						<exit>$tempID</exit>
-					</if>
-
-					<set var="link">../../../../../../index.php?umi=messages&amp;page=details_message&amp;presettempfile=$tempID</set>
-					<header>Location: $link</header>
-
-					<include id="net.zeyon.lib.html.template-1020.html" />
-					<new class="Html.Boilerplate" var="page">
-						<param name="title">PDF Printout - Redirect</param>
-						<param name="header"><![CDATA[
-						<meta http-equiv="REFRESH" content="0;url=$link">
-						]]></param>
-						<param name="content"><![CDATA[
-							<h2>You are now being forwarded!</h2>
-							<p>If your e-mail does not open in 3 seconds, click <a href="$link">here</a>.</p>
-						]]></param>
-					</new>
-					<header>Content-type: text/html; charset=UTF-8</header>
-					<output>
-						<call func="page.compile" />
-					</output>
-				<else>
-					<header>Content-type: application/pdf</header>
-					<!--<header>Content-Disposition: attachment; filename="$self.transactionnum$.pdf"</header>-->
-					<output>$pdf</output>
-				</else>
-				</if>
-			<catch var="error">
-				<if value1="$REQUEST.dispatcherror" value2="1">
-					<error>$error</error>
-				</if>
-				<include id="net.zeyon.lib.html.template-1020.html" />
-				<new class="Html.Boilerplate" var="page">
-					<param name="title">PDF Printout - Error</param>
-					<param name="content"><![CDATA[
-						<h2>Sorry - an error has occurred!</h2>
-						<p>$error</p>
-					]]></param>
-				</new>
-				<header>Content-type: text/html; charset=UTF-8</header>
-				<output>
-					<call func="page.compile" />
-				</output>
-			</catch>
-			</try>
-			<!--<set var="silent">1</set>-->
+			<include id=".generatePrintout" var="generatePrintout" />
+			<expand macro="generatePrintout" />
+		</rest:resource>
+		<rest:resource route="/print/:ENTITY/:ID/:FILENAME" method="GET">
+			<include id=".generatePrintout" var="generatePrintout" />
+			<expand macro="generatePrintout" />
 		</rest:resource>
 	</rest:server>
 <catch var="err">

@@ -1,5 +1,5 @@
 {
-  "token": "2TaNVOLSmx136fKLuLDB",
+  "token": "",
   "billing": {
     "paymentconditions": {
       "de_DE": {
@@ -52,7 +52,7 @@
   "defaultlang": "de_DE",
   "showForm": "0",
   "basepdf": "billing_pdf",
-  "namespace": "cmsit.printouts",
+  "namespace": "arkandus.printouts",
   "templates": {
     "base": "template",
     "billing": "template-billing",
@@ -72,9 +72,5 @@
     "dunningInitial": "template-dunning-initial",
     "dunningIntermediate": "template-dunning-intermediate",
     "dunningFinal": "template-dunning-final"
-  },
-  "presets": {
-    "sendMail": "1",
-    "mailTemplate": "7370"
   }
 }

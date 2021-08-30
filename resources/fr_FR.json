@@ -1,0 +1,219 @@
+{
+    "address": {
+        "delivery": "Adresse de livraison",
+        "invoice": "Adresse de facturation"
+    },
+    "amount": {
+        "amount": "Montant",
+        "balance": "Solde",
+        "discount": "Remise",
+        "dunning": "Frais de relance",
+        "netamount": "Montant net",
+        "netdiscount": {
+            "excluding": "Total net (excl. discount)",
+            "including": "Total net (incl. discount)"
+        },
+        "nettotal": "Total net",
+        "paid": "Montant réglé",
+        "payable": "Montant à payer",
+        "subtotal": "Sous-total",
+        "tax": {
+            "addon": "plus {taxrate} % TVA",
+            "base": "Montant basé sur les taxes",
+            "onamount": "plus {taxrate} % TVA sur {amount}",
+            "vat": "TVA"
+        },
+        "total": "Total"
+    },
+    "bank": {
+        "account": "N° de compte",
+        "bank": "Nom de la banque",
+        "bankcode": "Code banque",
+        "bic": "BIC",
+        "debit": "Nous débiterons le montant du paiement avec le compte bancaire suivant",
+        "details": "Banque correspondante",
+        "iban": "IBAN",
+        "subject": "Sujet",
+        "transfer": "Merci de transférer le paiement à notre banque"
+    },
+    "conditions": {
+        "currency": "Tous nos prix sont donnés en {currency}",
+        "delivery": "Conditions de livraisons",
+        "method": "Méthode de paiement",
+        "payment": "Conditions de paiements",
+        "shipping": "Transport"
+    },
+    "date": {
+        "full": "d-m-Y",
+        "short": "d-m"
+    },
+  "dialog": {
+        "attach": "Enregistrer le PDF",
+        "email": "Envoyer par e-mail",
+        "email_template": "Modèle e-mail",
+        "hidegross": "Masquer le montant des taxes",
+        "hidesubtotals": "Masquer les sous-totaux",
+        "hidetotal": "Masquer les totaux",
+        "print": "Créer le PDF",
+        "printblank": "Impression vierge",
+        "printout":  "Impressions",
+        "showdiscounts": "Afficher la remise",
+        "template": {
+            "confirm": "Souhaitez-vous vraiment supprimer le modèle \"{name}\"?",
+            "default": "Configurer par défaut",
+            "insert": "Insérer le modèle",
+            "remove": "Supprimer le modèle",
+            "save": "Enregistrer le modèle",
+            "template": "Modèle"
+        }
+    },
+    "dunning": {
+        "list": {
+            "date": "Date de facture",
+            "duedate": "Date d'échéance",
+            "invoicenum": "Numéro de facture"
+        },
+        "title": {
+            "dunning1": {
+                "name": "1ère relance"
+            },
+            "dunning2": {
+                "name": "2ème relance"
+            },
+            "dunning3": {
+                "name": "Lettre de pré-collecte"
+            },
+            "reminder": {
+                "name": "Rappel de paiement",
+                "no": "Référence n°",
+                "number": "Numéro de référence"
+            }
+        }
+    },
+    "extdataname": {
+        "customer_conditions": "Conditions de paiement et de livraison",
+        "supplier_conditions": "Conditions de paiement et de livraison"
+    },
+    "field": {
+        "agent": "Agent",
+        "client_agent": "Agent client",
+        "client_date": "Date de réf. du client",
+        "client_ref": "N° de réf. du client",
+        "customervatid": "Identifiant TVA du client",
+        "date": "Date",
+        "docdate": "Date du document",
+        "due": "Echéance",
+        "duedate": "Date d'échéance",
+        "page": "Page",
+        "pages": "Pages",
+        "refdate": "Date de transaction",
+        "registerid": "N° Registre du commerce",
+        "suppliervatid": "Identifiant TVA du fournisseur",
+        "taxcode": "N° de taxe",
+        "vatid": "Identifiant TVA",
+        "youragent": "Votre agent",
+        "yourtransnum": "Votre n° de transaction",
+        "yourvatid": "Votre Identifiant TVA"
+    },
+    "item": {
+        "amount": "Montant",
+        "description": "Description",
+        "discount": "Remise",
+        "item": "Article",
+        "itemnum": "N° d'article",
+        "items": "Articles",
+        "manufacturer": "Fabricant",
+        "name": "Nom",
+        "original": "Conformément au bon de livraison {deliverynum} ({date})",
+        "pos": "Pos.",
+        "price": "Prix\/unité",
+        "priceperunit": "Prix à l'unité",
+        "tax": "TVA",
+        "total": "Total",
+        "unit": "unité"
+    },
+    "number": {
+        "decpoint": ".",
+        "separator": ","
+    },
+    "partner": {
+        "customer": {
+            "name": "Client",
+            "no": "N° de client",
+            "number": "Numéro de client"
+        },
+        "supplier": {
+            "name": "Fournisseur",
+            "no": "N° de fournisseur",
+            "number": "Numéro de fournisseur"
+        }
+    },
+    "type": {
+        "credit": {
+            "name": "Note de crédit",
+            "no": "N° de note de crédit",
+            "number": "Numéro de note de crédit"
+        },
+        "delivery": {
+            "name": "Bon de livraison",
+            "no": "Bon de livraison",
+            "number": "Numéro de livraison"
+        },
+        "dunning": {
+            "name": "Rappel de paiement",
+            "no": "N°de rappel",
+            "number": "Numéro de rappel"
+        },
+        "invoice": {
+            "name": "Facture",
+            "no": "N° de facture",
+            "number": "Numéro de facture"
+        },
+        "order": {
+            "name": "Commande",
+            "no": "N° de commande",
+            "number": "Numéro de commande"
+        },
+        "pinvoice": {
+            "name": "Facture pro forma",
+            "no": "N° de facture pro forma",
+            "number": "Numéro de facture pro-forma"
+        },
+        "quote": {
+            "name": "Devis",
+            "no": "N° de quotation",
+            "number": "Numéro de quotation"
+        },
+        "scredit": {
+            "name": "Crédit fournisseur",
+            "no": "N° de note de crédit",
+            "number": "Numéro de note de crédit"
+        },
+        "sdelivery": {
+            "name": "Livraison fournisseur",
+            "no": "N° de livraison",
+            "number": "Numéro de livraison"
+        },
+        "sinvoice": {
+            "name": "Facture fournisseur",
+            "no": "N° de facture",
+            "number": "Numéro de facture"
+        },
+        "sorder": {
+            "name": "Commande",
+            "no": "N° de commande",
+            "number": "Numéro de commande"
+        },
+        "srequest": {
+            "name": "Demande",
+            "no": "N° de demande",
+            "number": "Numéro de demande"
+        }
+    },
+    "webletname": {
+        "dialog-billing": "Imprimer en PDF",
+        "dialog-collection": "Imprimer en PDF",
+        "dialog-procurement": "Imprimer en PDF"
+
+    }
+}

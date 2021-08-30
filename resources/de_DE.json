@@ -3,6 +3,7 @@
         "delivery": "Lieferanschrift",
         "invoice": "Rechnungsanschrift"
     },
+    "roudingErrorVAT": "Rundungsfehler zugunsten MwSt.",
     "amount": {
         "amount": "Betrag",
         "balance": "Saldo",
@@ -58,6 +59,7 @@
         "printblank": "Blankodruck",
         "printout": "Ausdruck",
         "showdiscounts": "Rabatte anzeigen",
+        "subsetting": "PDF komprimieren",
         "template": {
             "confirm": "Wollen Sie die Vorlage \"{name}\" wirklick l\u00f6schen?",
             "default": "Als Standard setzen",
@@ -98,7 +100,7 @@
         "agent": "Bearbeiter",
         "client_agent": "Bearbeiter (Kunde)",
         "client_date": "Vorgangsdatum (Kunde)",
-        "client_ref": "Refenz (Kunde)",
+        "client_ref": "Referenz (Kunde)",
         "customervatid": "USt.-ID (Kunde)",
         "date": "Datum",
         "docdate": "Datum",
@@ -163,6 +165,11 @@
             "name": "Mahnung",
             "no": "Mahnungsnr.",
             "number": "Mahnungsnummer"
+        },
+        "list": {
+            "name": "Aufstellung",
+            "no": "Aufstellungsnr.",
+            "number": "Aufstellungsnummer"
         },
         "invoice": {
             "name": "Rechnung",

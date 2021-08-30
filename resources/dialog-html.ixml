@@ -11,6 +11,7 @@
 	<db:get entity="dunning" id="$REQUEST.id" var="self" var_fields="field">
 		<db:field alias="transactionnum">dunningnum</db:field>
 		<db:field>level</db:field>
+		<db:field>account</db:field>
 	</db:get>
 	<set var="self.type">$(10 + $self.level)</set>
 	<set var="transnum">dunning</set>
@@ -19,6 +20,7 @@
 	<db:get entity="transactions" id="$REQUEST.id" var="self" var_fields="field">
 		<db:field>type</db:field>
 		<db:field>transactionnum</db:field>
+		<db:field>account</db:field>
 	</db:get>
 	<set var="transnum">transaction</set>
 </else>
@@ -72,6 +74,34 @@
 	</if>
 </if>
 
+<!-- presets -->
+<array var="presets"/>
+<if value1="$self.account" func="!=">
+	<if value1="$APPSETTINGS.presets.sendMail" func="!=">
+		<db:select var_result="account" type="self">
+			<db:fields>
+				<db:field alias="email2">x.value</db:field>
+			</db:fields>
+			<db:table alias="a">accounts</db:table>
+			<db:join>
+				<db:inner alias="b" table="contacts" field1="a.contact" field2="b.ID" />
+				<db:leftextdata alias="x" entity="accounts" name="billing_email_$self.type" field="a.ID" />
+			</db:join>
+			<db:is field="a.ID">$self.account</db:is>
+		</db:select>
+		<if value1="$account.email2" func="!=">
+			<if value1="$APPSETTINGS.presets.mailTemplate" func="!=">
+				<true var="presets.sendMail"/>
+				<db:get entity="messages" id="$APPSETTINGS.presets.mailTemplate" var="presets.mailTemplate">
+					<db:field alias="id">ID</db:field>
+					<db:field alias="label">subject</db:field>
+				</db:get>
+			</if>
+		</if>
+	</if>
+</if>
+<encode:json var="presets" var_result="jPresets"/>
+
 <!-- Initialize the HTML frame -->
 <array var="params">
 	<array key="includeCss">
@@ -94,6 +124,7 @@
 		var TYPE    = '$self.type';
 		var ENTITY  = '$entity';
 		var TEMP    = $temp;
+		var PRESETS = $jPresets;
 		</item>
 		<item>
 			<include id=".controller" />

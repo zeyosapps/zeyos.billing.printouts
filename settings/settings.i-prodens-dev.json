@@ -1,18 +1,13 @@
 {
-  "offset": 23,
-  "topmargin": 40,
-  "leftmargin": 21,
-  "headerPosY": 110,
-  "highlightColor": "#0076a7",
   "showForm": 0,
-  "token": "984326589ht479234",
+  "token": "KGf73igbfeieu4gtx87",
   "templates": {
     "dunning": "template-dunning",
     "dunningReminder": "template-dunning",
-    "dunningInitial": "template-dunnin",
+    "dunningInitial": "template-dunning",
     "dunningIntermediate": "template-dunning",
     "dunningFinal": "template-dunning"
   },
   "defaultlang": "de_DE",
-  "namespace-off": "mywhite.printouts"
+  "namespace": "iprodens.printouts"
 }

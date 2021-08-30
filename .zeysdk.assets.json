@@ -22,43 +22,73 @@
   "resources": {
     "controller": {
       "name": "Print-out controller",
-      "mimetype": "application/javascript"
+      "mimetype": "text/javascript",
+      "public": 0
     },
     "dialog-html": {
       "name": "PDF Template - Print-Out Dialog (HTML)",
-      "mimetype": "application/ixml+xml"
+      "mimetype": "application/ixml+xml",
+      "public": 0
     },
     "form-conditions": {
       "name": "Delivery Conditions",
-      "mimetype": "application/ixml+xml"
+      "mimetype": "application/ixml+xml",
+      "public": 0
     },
     "lib": {
       "name": "PDF Template - Library Functions",
-      "mimetype": "application/ixml+xml"
+      "mimetype": "application/ixml+xml",
+      "public": 0
     },
     "template": {
       "name": "Print Template Frame",
-      "mimetype": "application/ixml+xml"
+      "mimetype": "application/ixml+xml",
+      "public": 0
     },
     "template-billing-deliveries": {
       "name": "Template - Delivery Note (Billing)",
-      "mimetype": "application/ixml+xml"
+      "mimetype": "application/ixml+xml",
+      "public": 0
     },
     "template-dunning": {
       "name": "Print Template Frame - Dunning",
-      "mimetype": "application/ixml+xml"
+      "mimetype": "application/ixml+xml",
+      "public": 0
     },
     "de_DE": {
       "name": "Print-Template - Language de_DE",
-      "mimetype": "application/json"
+      "mimetype": "application/json",
+      "public": 0
     },
     "en_US": {
       "name": "Print-Template - Language en_US",
-      "mimetype": "application/json"
+      "mimetype": "application/json",
+      "public": 0
+    },
+    "fr_FR": {
+      "name": "Print-Template - Language fr_FR",
+      "mimetype": "application/json",
+      "public": 0
     },
     "es_ES": {
       "name": "locale-es_ES",
-      "mimetype": "application/json"
+      "mimetype": "application/json",
+      "public": 0
+    },
+    "createPdf": {
+      "mimetype": "application/ixml+xml",
+      "name": "getPrintout",
+      "public": 0
+    },
+    "settings": {
+      "mimetype": "application/ixml+xml",
+      "name": "settings",
+      "public": 0
+    },
+    "generatePrintout": {
+      "mimetype": "application/ixml+xml",
+      "name": "Generate Printout",
+      "public": 0
     }
   },
   "weblets": {
@@ -145,6 +175,18 @@
       "color": "",
       "mimetype": "application/ixml+xml",
       "langaliases": "{\"en_US\":\"Payment and delivery conditions\",\"es_ES\":\"Condiciones de pago y env\\u00edo\",\"de_DE\":\"Zahlungs- und Lieferbedingungen\"}"
+    },
+    "accounts_emails": {
+      "mimetype": "application/ixml+xml",
+      "name": "E-Mail Settings",
+      "type": "embedded_collapsed",
+      "langaliases": "{\"de_DE\": \"E-Mail-Einstellungen\"}",
+      "view": "accounts.details_account.details.form",
+      "width": 0,
+      "height": 0,
+      "color": "",
+      "svgpath": "",
+      "url": ""
     }
   }
 }

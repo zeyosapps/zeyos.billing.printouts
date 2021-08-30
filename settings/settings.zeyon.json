@@ -1,5 +1,5 @@
 {
-  "token": "",
+  "token": "KUIHBf8734hbb43t",
   "billing": {
     "paymentconditions": {
       "de_DE": {
@@ -47,33 +47,8 @@
     "en_US",
     "es_ES"
   ],
-  "defaultlang": "en_US",
-  "showForm": "1",
-  "showFormSupplier": "1",
-  "showFormCustomer": "1",
-  "basepdf": "billing_pdf",
-  "namespace": "",
-  "templates": {
-    "base": "template",
-    "billing": "template-billing",
-    "billingQuotes": "template-billing-quotes",
-    "billingOrders": "template-billing-orders",
-    "billingDeliveries": "template-billing-deliveries",
-    "billingInvoices": "template-billing-invoices",
-    "billingCredits": "template-billing-credits",
-    "procurement": "template-procurement",
-    "procurementRequests": "template-procurement-requests",
-    "procurementOrders": "template-procurement-orders",
-    "procurementDeliveries": "template-procurement-deliveries",
-    "procurementInvoices": "template-procurement-invoices",
-    "procurementCredits": "template-procurement-credits",
-    "production": "template-production",
-    "productionFabrication": "template-production-fabrication",
-    "productionDisassembly": "template-production-disassembly",
-    "dunning": "template-dunning",
-    "dunningReminder": "template-dunning-reminder",
-    "dunningInitial": "template-dunning-initial",
-    "dunningIntermediate": "template-dunning-intermediate",
-    "dunningFinal": "template-dunning-final"
-  }
+  "defaultlang": "de_DE",
+  "showForm": "0",
+  "showFormCustomer": "0",
+  "namespace": "zeyon.printouts"
 }

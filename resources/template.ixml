@@ -72,6 +72,7 @@
 		"rightmargin",
 		"headerPosY",
 		"fontsize",
+		"fontFamily",
 		"widthDocHeader1",
 		"widthDocHeader2",
 		"widthDocHeader3",
@@ -112,9 +113,41 @@
 		</for>
 
 		<if value1="$entity" value2="dunning">
-			<db:get entity="dunning" id="$ID" var="this.trans" />
-			<set var="this.trans.transactionnum">$this.trans.dunningnum</set>
-			<set var="this.trans.type">$(10 + $this.trans.level)</set>
+			<db:select var_result="this.trans" type="self">
+				<db:fields>
+					<db:field>d.ID</db:field>
+					<db:field>d.ownergroup</db:field>
+					<db:field>d.creator</db:field>
+					<db:field>d.assigneduser</db:field>
+					<db:field>d.creationdate</db:field>
+					<db:field>d.lastmodified</db:field>
+					<db:field>d.account</db:field>
+					<db:field alias="transactionnum">d.dunningnum</db:field>
+					<db:field>d.date</db:field>
+					<db:field>d.duedate</db:field>
+					<db:field>d.status</db:field>
+					<db:field alias="level">l.value</db:field>
+					<db:field>d.recipient</db:field>
+					<db:field>d.address</db:field>
+					<db:field>d.postalcode</db:field>
+					<db:field>d.city</db:field>
+					<db:field>d.region</db:field>
+					<db:field>d.country</db:field>
+					<db:field>d.type</db:field>
+					<db:field>d.fee</db:field>
+				</db:fields>
+				<db:table alias="d">dunning</db:table>
+				<db:join>
+					<db:leftouter alias="l" table="extdata">
+						<db:is field="l.entity">dunning</db:is>
+						<db:is field="l.name">level</db:is>
+						<db:is field1="l.index" field2="d.ID" />
+					</db:leftouter>
+				</db:join>
+				<db:is field="d.ID">$ID</db:is>
+			</db:select>
+
+			<set var="this.trans.type">$(10 + $this.trans.type)</set>
 			<db:select var="sqlPayments">
 				<db:fields>
 					<db:expression>SUM("c"."amount")</db:expression>
@@ -137,6 +170,7 @@
 				<db:is field="f.status" func="!=">2</db:is> <!-- Canceled -->
 				<db:is field1="a.transaction" field2="e.transaction" />
 			</db:select>
+			<!--
 			<db:select var="sqlFees">
 				<db:fields>
 					<db:expression>SUM("d"."fee")</db:expression>
@@ -145,13 +179,15 @@
 				<db:join>
 					<db:inner alias="g" table="dunning" field1="d.dunning" field2="g.ID" />
 				</db:join>
-				<db:is field="g.status" func="!=">2</db:is> <!-- Canceled -->
+				<db:is field="g.status" func="!=">2</db:is>
 				<db:is field1="a.transaction" field2="d.transaction" />
 			</db:select>
+			-->
 			<db:select var_result="this.items" type="assoc">
 				<db:fields>
 					<db:field>b.ID</db:field>
 					<db:field>b.transactionnum</db:field>
+					<db:field alias="transactiontype">b.type</db:field>
 					<db:field>b.date</db:field>
 					<db:field>b.duedate</db:field>
 					<db:field>b.status</db:field>
@@ -162,8 +198,8 @@
 					<db:field>b.tax</db:field>
 					<db:field>b.items</db:field>
 					<db:field alias="payments">($sqlPayments)</db:field>
-					<db:field alias="charges">($sqlFees)</db:field>
 					<db:field alias="level">($sqlLevel)</db:field>
+					<!-- <db:field alias="charges">($sqlFees)</db:field> -->
 				</db:fields>
 				<db:table alias="a">dunning2transactions</db:table>
 				<db:join>
@@ -288,29 +324,37 @@
 				<set var="this.type">credit</set>
 			</case>
 			<case value="10">
+				<set var="this.docName">$L(type.list.name)</set>
+				<set var="this.docNumber">$L(type.list.number)</set>
+				<set var="this.docNo">$L(type.list.no)</set>
+				<set var="this.type">list</set>
+			</case>
+			<case value="11">
 				<set var="this.docName">$L(dunning.title.reminder.name)</set>
 				<set var="this.docNumber">$L(dunning.title.reminder.number)</set>
 				<set var="this.docNo">$L(dunning.title.reminder.no)</set>
 				<set var="this.type">reminder</set>
 			</case>
-			<case value="11">
-				<set var="this.docName">$L(dunning.title.dunning1.name)</set>
-				<set var="this.docNumber">$L(type.dunning.number)</set>
-				<set var="this.docNo">$L(type.dunning.no)</set>
-				<set var="this.type">dunning1</set>
-			</case>
 			<case value="12">
-				<set var="this.docName">$L(dunning.title.dunning2.name)</set>
+				<set var="this.docName">$L(type.dunning.name)</set>
 				<set var="this.docNumber">$L(type.dunning.number)</set>
 				<set var="this.docNo">$L(type.dunning.no)</set>
-				<set var="this.type">dunning2</set>
+				<set var="this.type">dunning</set>
 			</case>
+			<!--
 			<case value="13">
 				<set var="this.docName">$L(dunning.title.dunning3.name)</set>
 				<set var="this.docNumber">$L(type.dunning.number)</set>
 				<set var="this.docNo">$L(type.dunning.no)</set>
 				<set var="this.type">dunning3</set>
 			</case>
+			<case value="14">
+				<set var="this.docName">$L(dunning.title.list.name)</set>
+				<set var="this.docNumber">$L(type.list.number)</set>
+				<set var="this.docNo">$L(type.list.no)</set>
+				<set var="this.type">list</set>
+			</case>
+			-->
 		</switch>
 
 		<set var="this.umi">billing</set>
@@ -356,6 +400,11 @@
 			<array key="blank">
 				<item key="type">checkbox</item>
 				<item key="label">$L(dialog.printblank)</item>
+			</array>
+			<array key="subsetting">
+				<item key="type">checkbox</item>
+				<item key="default">1</item>
+				<item key="label">$L(dialog.subsetting)</item>
 			</array>
 		</array>
 
@@ -578,6 +627,13 @@
 					</if>
 				</case>
 			</switch>
+
+			<if value1="$this.entity" value2="dunning">
+				<set var="skip">1</set>
+				<pdf:block>$this.getAddressName($this.trans.recipient)</pdf:block>
+				<pdf:block>$this.trans.address</pdf:block>
+				<pdf:block>$this.trans.postalcode $this.trans.city$$this.getCountry($this.trans.country)</pdf:block>
+			</if>
 
 			<if value1="$skip">
 				<if value1="$this.account.lastname" func="!=">
@@ -877,12 +933,10 @@
 		Adds a line separator
 	-->
 	<method name="addLine">
-		<if value1="$item.row" value2="0" func="&gt;">
-			<pdf:style border="B" borderwidth="0.1" bordercolor="#d5d5d5">
-				<pdf:block width="$this.widthTotal" height="1"></pdf:block>
-			</pdf:style>
-			<pdf:linebreak offset="1" />
-		</if>
+		<pdf:style border="B" borderwidth="0.10" bordercolor="#000000">
+			<pdf:block width="$this.widthTotal" height="1"></pdf:block>
+		</pdf:style>
+		<pdf:linebreak offset="1" />
 	</method>
 
 	<!--
@@ -970,9 +1024,11 @@
 				<if value1="$this.options.hideGross" value2="1" func="!=">
 					<!-- TAXES -->
 					<set var="taxTotal">0</set>
+					<math:round precision="2" var="totalAmount">$this.trans.netamount</math:round>
 					<foreach var="this.taxes" var_key="taxrate" var_value="taxamount">
-						<math:round precision="2" var="taxamount">$taxamount</math:round>
 						<set var="taxTotal">$($taxTotal + $taxamount)</set>
+						<math:round precision="2" var="taxamount">$taxamount</math:round>
+						<set var="totalAmount">$($totalAmount + $taxamount)</set>
 						<call func="this.totalRow">
 							<param name="borderTop">0.3</param>
 							<param name="label">$L($this.totalTaxLine, {"taxrate": "$taxrate", "amount": "$this.formatAmount($this.taxAmounts[$taxrate])"})</param>
@@ -980,19 +1036,17 @@
 						</call>
 					</foreach>
 
-					<!--
-					@TODO: Implement rounding error "Rundungsfehler zugunsten MwSt."
 					<math:round precision="2" var="netamount">$this.trans.netamount</math:round>
-					<math:round precision="2" var="totalamount">$($this.trans.netamount + $this.trans.taxamount)</math:round>
-					<math:round var="rounderr" precision="2">$totalamount - $netamount - $taxTotal</math:round>
-					<if value1="$rounderr" func="&lt;=" value2="-0.01">
+					<math:round var="rounderr" precision="2">$(($totalAmount - $this.trans.netamount - $this.trans.tax) * -1)</math:round>
+
+					<if value1="$rounderr" value2="0" func="&gt;">
 						<call func="this.totalRow">
 							<param name="borderTop">0.3</param>
-							<param name="label">$L(rounderr)</param>
+							<param name="label">$L(roudingErrorVAT)</param>
 							<param name="amount">$rounderr</param>
 						</call>
 					</if>
-					-->
+					<set var="rounderr">0</set>
 
 					<call func="this.fireEvent">
 						<param name="event">afterTotalTax</param>
@@ -1003,7 +1057,10 @@
 						<param name="borderTop">0.5</param>
 						<param name="borderBottom">0.5</param>
 						<param name="label">$L(amount.total)</param>
-						<param name="amount">$($this.trans.netamount + $taxTotal)</param>
+						<param name="amount">$totalAmount</param>
+						<!--
+						<param name="amount">$($this.trans.netamount + $this.trans.tax)</param>
+						-->
 					</call>
 				</if>
 			</if>
@@ -1013,7 +1070,7 @@
 	<method name="blockItemCustom" />
 
 	<method name="create">
-		<null var="templateTempFile" />
+		<null var="this.templateTempFile" />
 
 		<if value1="$this.options.blank" value2="1" func="!=">
 			<try>
@@ -1024,7 +1081,7 @@
 						<file:makedir dirname="./data/temp" />
 					</is>
 
-					<temp:write var="templateTempFile">$pdf</temp:write>
+					<temp:write var="this.templateTempFile">$pdf</temp:write>
 				</is>
 			<catch var="error">
 			</catch>
@@ -1034,19 +1091,19 @@
 		</else>
 		</if>
 
-		<is var="templateTempFile" type="non-empty">
-			<temp:path id="$templateTempFile" var="templateFile" />
+		<is var="this.templateTempFile" type="non-empty">
+			<temp:path id="$this.templateTempFile" var="this.templateFile" />
 		<else>
-			<set var="templateFile" />
+			<set var="this.templateFile" />
 		</else>
 		</is>
 
-		<pdf:document var="return">
+		<pdf:document var="return" subsetting="$this.options.subsetting">
 			<call func="this.fireEvent">
 				<param name="event">beforeDocument</param>
 			</call>
 			<pdf:section leftmargin="$this.leftmargin" rightmargin="$this.rightmargin" topmargin="$this.topmargin" bottommargin="$this.bottommargin" format="$this.format">
-				<pdf:templates filename="$templateFile">
+				<pdf:templates filename="$this.templateFile">
 					<foreach var="this.importPages" var_key="key" var_value="value">
 						<pdf:template source="$key" target="$value" />
 					</foreach>

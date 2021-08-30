@@ -47,9 +47,10 @@
     "languages": [
         "de_DE",
         "en_US",
-        "es_ES"
+        "es_ES",
+        "fr_FR"
     ],
-    "defaultlang": "en_US",
+    "defaultlang": "fr_FR",
     "showForm": "0",
     "showFormCustomer": "0",
     "namespace": "zfxgmbh.printouts",

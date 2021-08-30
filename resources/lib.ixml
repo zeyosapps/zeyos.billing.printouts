@@ -2,17 +2,21 @@
 <!DOCTYPE ixml SYSTEM "http://www.ixmldev.com/schema/ixml.dtd">
 <ixml>
 
+<global var="PRINTSETTINGS" />
+<include id="zeyos.billing.printouts.settings" var="PRINTSETTINGS" />
+
 <!-- Get the session -->
 <global var="session" />
 <session var="session" />
 
 <!-- Load the language files -->
 <array var="params">
-	<item key="lang">$APPSETTINGS.defaultlang</item>
+	<item key="lang">$PRINTSETTINGS.defaultlang</item>
 	<array key="accepted">
 		<item>en_US</item>
 		<item>de_DE</item>
 		<item>es_ES</item>
+		<item>fr_FR</item>
 	</array>
 	<array key="load">
 		<item>zeyos.locale.common</item>
@@ -32,46 +36,52 @@
 <function var="getTemplateId">
 	<switch value="$return">
 		<case value="0">
-			<set var="return">$APPSETTINGS.templates.billingQuotes</set>
+			<set var="return">$PRINTSETTINGS.templates.billingQuotes</set>
 		</case>
 		<case value="1">
-			<set var="return">$APPSETTINGS.templates.billingOrders</set>
+			<set var="return">$PRINTSETTINGS.templates.billingOrders</set>
 		</case>
 		<case value="2">
-			<set var="return">$APPSETTINGS.templates.billingDeliveries</set>
+			<set var="return">$PRINTSETTINGS.templates.billingDeliveries</set>
 		</case>
 		<case value="3">
-			<set var="return">$APPSETTINGS.templates.billingInvoices</set>
+			<set var="return">$PRINTSETTINGS.templates.billingInvoices</set>
 		</case>
 		<case value="4">
-			<set var="return">$APPSETTINGS.templates.billingCredits</set>
+			<set var="return">$PRINTSETTINGS.templates.billingCredits</set>
 		</case>
 		<case value="5">
-			<set var="return">$APPSETTINGS.templates.procurementRequests</set>
+			<set var="return">$PRINTSETTINGS.templates.procurementRequests</set>
 		</case>
 		<case value="6">
-			<set var="return">$APPSETTINGS.templates.procurementOrders</set>
+			<set var="return">$PRINTSETTINGS.templates.procurementOrders</set>
 		</case>
 		<case value="7">
-			<set var="return">$APPSETTINGS.templates.procurementDeliveries</set>
+			<set var="return">$PRINTSETTINGS.templates.procurementDeliveries</set>
 		</case>
 		<case value="8">
-			<set var="return">$APPSETTINGS.templates.procurementInvoices</set>
+			<set var="return">$PRINTSETTINGS.templates.procurementInvoices</set>
 		</case>
 		<case value="9">
-			<set var="return">$APPSETTINGS.templates.procurementCredits</set>
+			<set var="return">$PRINTSETTINGS.templates.procurementCredits</set>
 		</case>
 		<case value="10">
-			<set var="return">$APPSETTINGS.templates.dunningReminder</set>
+			<set var="return">$PRINTSETTINGS.templates.productionFabrication</set>
 		</case>
 		<case value="11">
-			<set var="return">$APPSETTINGS.templates.dunningInitial</set>
+			<set var="return">$PRINTSETTINGS.templates.productionDisassembly</set>
 		</case>
 		<case value="12">
-			<set var="return">$APPSETTINGS.templates.dunningIntermediate</set>
+			<set var="return">$PRINTSETTINGS.templates.dunningReminder</set>
 		</case>
 		<case value="13">
-			<set var="return">$APPSETTINGS.templates.dunningFinal</set>
+			<set var="return">$PRINTSETTINGS.templates.dunningInitial</set>
+		</case>
+		<case value="14">
+			<set var="return">$PRINTSETTINGS.templates.dunningIntermediate</set>
+		</case>
+		<case value="15">
+			<set var="return">$PRINTSETTINGS.templates.dunningFinal</set>
 		</case>
 	</switch>
 </function>
@@ -130,7 +140,7 @@
 			<db:field>account</db:field>
 			<db:field>level</db:field>
 		</db:get>
-		<set var="return.type">$(10 + $self.level)</set>
+		<set var="return.type">$(12 + $self.level)</set>
 	<else>
 		<db:get entity="transactions" id="$ID" var="return">
 			<db:field>ID</db:field>
@@ -167,11 +177,14 @@
 
 	<!-- Get the document type -->
 	<if value1="$self.entity" value2="dunning">
-		<set var="docTemplateBase">$APPSETTINGS.templates.dunning</set>
+		<set var="docTemplateBase">$PRINTSETTINGS.templates.dunning</set>
 	<else>
-		<set var="docTemplateBase">$APPSETTINGS.templates.billing</set>
+		<set var="docTemplateBase">$PRINTSETTINGS.templates.billing</set>
 		<if value1="$self.type" value2="4" func="&gt;">
-			<set var="docTemplateBase">$APPSETTINGS.templates.procurement</set>
+			<set var="docTemplateBase">$PRINTSETTINGS.templates.procurement</set>
+		</if>
+		<if value1="$self.type" value2="9" func="&gt;">
+			<set var="docTemplateBase">$PRINTSETTINGS.templates.production</set>
 		</if>
 	</else>
 	</if>
@@ -179,14 +192,14 @@
 	<set var="docTemplateType">$getTemplateId($self.type)</set>
 
 	<!-- Intialize the namespace -->
-	<if value1="$APPSETTINGS.namespace" func="!=">
-		<set var="NS">$APPSETTINGS.namespace$.</set>
+	<if value1="$PRINTSETTINGS.namespace" func="!=">
+		<set var="NS">$PRINTSETTINGS.namespace$.</set>
 	</if>
 
 	<!-- Include the base template -->
-	<include id="$NS$$APPSETTINGS.templates.base" var="Template" />
+	<include id="$NS$$PRINTSETTINGS.templates.base" var="Template" />
 
-	<!-- Include the module specific base template (billing, procurement, dunning) -->
+	<!-- Include the module specific base template (billing, procurement, dunning, production) -->
 	<if value1="$resourceExists($NS$$docTemplateBase)" value2="1">
 		<try>
 			<include id="$NS$$docTemplateBase" var="Template">
@@ -221,6 +234,117 @@
 			<param name="options" var="options" />
 		</is>
 	</new>
+</function>
+
+<!--
+	@param entity
+	@param ID
+	@param REQUEST (intro, outro, lang, options, ...)
+-->
+<function var="return.getPdf">
+	<db:select var_result="cfg" type="self">
+		<db:fields>
+			<db:field>defaultsettings</db:field>
+			<db:field>settings</db:field>
+		</db:fields>
+		<db:table>applications</db:table>
+		<db:is field="identifier">zeyos.billing.printouts</db:is>
+	</db:select>
+	<decode:json var="defaultsettings">$cfg.defaultsettings</decode:json>
+	<decode:json var="settings">$cfg.settings</decode:json>
+
+	<include id="zeyos.lib.array" var="libArray"/>
+	<call func="libArray.deepMerge" var="PRINTSETTINGS">
+		<param name="array1" var="defaultsettings"/>
+		<param name="array2" var="settings"/>
+	</call>
+
+	<try>
+		<call func="getTransaction" var="self">
+			<param var="entity" />
+			<param var="ID" />
+		</call>
+
+		<is var="REQUEST.options">
+			<!-- Save the form settings -->
+			<extdata:set entity="$self.entity" id="$ID">
+				<extdata:data field="intro">$REQUEST.intro</extdata:data>
+				<extdata:data field="outro">$REQUEST.outro</extdata:data>
+				<extdata:data field="lang">$REQUEST.lang</extdata:data>
+				<extdata:data field="options">$REQUEST.options</extdata:data>
+			</extdata:set>
+
+			<assign var="DATA" var_source="REQUEST" />
+		<else>
+			<extdata:get entity="$self.entity" id="$ID" var="DATA" />
+		</else>
+		</is>
+
+		<!-- Initialize the language -->
+		<if value1="$DATA.lang" func="!=">
+			<if value1="$DATA.lang" func="!=" value2="$PRINTSETTINGS.defaultlang">
+				<set var="LANGUAGE.Localizer.lang">$DATA.lang</set>
+				<call func="LANGUAGE.Localizer.merge">
+					<param name="src">zeyos.locale.common</param>
+				</call>
+				<call func="LANGUAGE.Localizer.merge">
+					<param name="src">$SELFNS$</param>
+				</call>
+			</if>
+		</if>
+
+		<decode:json var="options">$DATA.options</decode:json>
+
+		<call func="getPrintOut" var="doc">
+			<param var="ID" />
+			<param var="entity" />
+			<param name="intro">$DATA.intro</param>
+			<param name="outro">$DATA.outro</param>
+			<param var="options" />
+		</call>
+
+		<set var="pdf">$doc.create()</set>
+
+		<!-- Create a mindlog entry -->
+		<if value1="$REQUEST.attach" value2="1">
+			<db:set entity="records" var="recordId">
+				<is var="self.ownergroup">
+					<db:data field="ownergroup">$self.ownergroup</db:data>
+				</is>
+				<db:data field="flag">1</db:data>
+				<db:data field="index">$ID</db:data>
+				<db:data field="entity">transactions</db:data>
+				<if value1="$session.ID" func="!=">
+					<db:data field="creator">$session.ID</db:data>
+					<else>
+						<db:get entity="transactions" id="$ID" var="t">
+							<db:field>assigneduser</db:field>
+						</db:get>
+						<if value1="$t.assigneduser" func="!=">
+							<db:data field="creator">$t.assigneduser</db:data>
+						</if>
+					</else>
+				</if>
+			</db:set>
+			<db:set entity="files">
+				<db:data field="record">$recordId</db:data>
+				<db:data field="mimetype">application/pdf</db:data>
+				<db:data field="size">
+					<size>$pdf</size>
+				</db:data>
+				<db:data field="filename">$self.transactionnum$.pdf</db:data>
+				<db:data field="binfile">
+					<bin:write>$pdf</bin:write>
+				</db:data>
+			</db:set>
+		</if>
+
+		<assign var="return" var_source="pdf"/>
+
+		<catch var="err">
+			<error>Printout Lib Error: $err</error>
+		</catch>
+	</try>
 </function>
 
 </ixml>

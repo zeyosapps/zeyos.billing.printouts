@@ -6,13 +6,12 @@
 	<extends class="Template" />
 
 	<property name="widthCol0">8</property>  <!-- Pos -->
-	<property name="widthCol1">24</property> <!-- Invoice -->
-	<property name="widthCol2">23</property> <!-- Date -->
-	<property name="widthCol3">23</property> <!-- Due date -->
-	<property name="widthCol4">24</property> <!-- Dunning Charges -->
-	<property name="widthCol5">24</property> <!-- Gross -->
-	<property name="widthCol6">24</property> <!-- Paid -->
-	<property name="widthCol7">24</property> <!-- Outstanding -->
+	<property name="widthCol1">30</property> <!-- Invoice -->
+	<property name="widthCol2">24</property> <!-- Date -->
+	<property name="widthCol3">24</property> <!-- Due date -->
+	<property name="widthCol4">25</property> <!-- Gross -->
+	<property name="widthCol5">25</property> <!-- Paid -->
+	<property name="widthCol6">25</property> <!-- Outstanding -->
 
 	<constructor>
 		<set var="this.widthColSumTotal">$($this.widthCol0 + $this.widthCol1 + $this.widthCol2 + $this.widthCol3)</set>
@@ -46,10 +45,9 @@
 				<pdf:col width="$this.widthCol2">$L(field.date)</pdf:col>
 				<pdf:col width="$this.widthCol3">$L(field.duedate)</pdf:col>
 				<pdf:style align="R">
-					<pdf:col width="$this.widthCol4">$L(amount.dunning)</pdf:col>
-					<pdf:col width="$this.widthCol5">$L(amount.total)</pdf:col>
-					<pdf:col width="$this.widthCol6">$L(amount.paid)</pdf:col>
-					<pdf:col width="$this.widthCol7">$L(amount.balance)</pdf:col>
+					<pdf:col width="$this.widthCol4">$L(amount.total)</pdf:col>
+					<pdf:col width="$this.widthCol5">$L(amount.paid)</pdf:col>
+					<pdf:col width="$this.widthCol6">$L(amount.balance)</pdf:col>
 				</pdf:style>
 			</pdf:row>
 		</pdf:style>
@@ -82,10 +80,9 @@
 					<date:format format="$L(date.full)">$item.duedate</date:format>
 				</pdf:col>
 				<pdf:style align="R">
-					<pdf:col width="$this.widthCol4">$this.formatAmount($item.charges)</pdf:col>
-					<pdf:col width="$this.widthCol5">$this.formatAmount($($item.netamount + $item.tax + $item.charges))</pdf:col>
-					<pdf:col width="$this.widthCol6">$this.formatAmount($item.payments)</pdf:col>
-					<pdf:col width="$this.widthCol7">$this.formatAmount($($item.netamount + $item.tax + $item.charges - $item.payments))</pdf:col>
+					<pdf:col width="$this.widthCol4">$this.formatAmount($($item.netamount + $item.tax))</pdf:col>
+					<pdf:col width="$this.widthCol5">$this.formatAmount($item.payments)</pdf:col>
+					<pdf:col width="$this.widthCol6">$this.formatAmount($($item.netamount + $item.tax - $item.payments))</pdf:col>
 				</pdf:style>
 			</pdf:row>
 		</pdf:style>
@@ -104,10 +101,9 @@
 		<pdf:style fontsize="$this.fontsize" fontstyle="B">
 			<pdf:row leftmargin="$this.widthColSumTotal">
 				<pdf:style align="R">
-					<pdf:col width="$this.widthCol4">$this.formatAmount($this.totalCharges)</pdf:col>
-					<pdf:col width="$this.widthCol5">$this.formatAmount($this.totalGross)</pdf:col>
-					<pdf:col width="$this.widthCol6">$this.formatAmount($this.totalPayments)</pdf:col>
-					<pdf:col width="$this.widthCol7">$this.formatAmount($this.totalBalance)</pdf:col>
+					<pdf:col width="$this.widthCol4">$this.formatAmount($this.totalGross)</pdf:col>
+					<pdf:col width="$this.widthCol5">$this.formatAmount($this.totalPayments)</pdf:col>
+					<pdf:col width="$this.widthCol6">$this.formatAmount($this.totalBalance)</pdf:col>
 				</pdf:style>
 			</pdf:row>
 		</pdf:style>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ixml SYSTEM "https://developers.zeyos.com/schema/ixml.dtd">
+<ixml
+	xmlns="https://developers.zeyos.com/schema/ixml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://developers.zeyos.com/schema/ixml https://developers.zeyos.com/schema/ixml.xsd">
+
+	<!--
+		@param string entity
+		@param int ID
+
+		@param array options
+		@param string intro
+		@param string outro
+		@param string lang
+	-->
+
+	<if value1="$entity">
+		<set var="entity">transactions</set>
+	</if>
+
+	<include id=".lib" />
+
+	<call func="getTransaction" var="self">
+		<param var="entity" />
+		<param var="ID" />
+	</call>
+
+	<!-- Initialize the language -->
+	<if value1="$lang" func="!=">
+		<set var="LANGUAGE.Localizer.lang">$lang</set>
+		<call func="LANGUAGE.Localizer.merge">
+			<param name="src">zeyos.locale.common</param>
+		</call>
+		<call func="LANGUAGE.Localizer.merge">
+			<param name="src">zeyos.billing.printouts</param>
+		</call>
+	</if>
+
+	<call func="getPrintOut" var="doc">
+		<param name="ID">$ID</param>
+		<param name="entity">$entity</param>
+		<param name="intro">$intro</param>
+		<param name="outro">$outro</param>
+		<param var="options" />
+	</call>
+
+	<set var="return">$doc.create()</set>
+
+</ixml>

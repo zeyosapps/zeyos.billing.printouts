@@ -3,6 +3,7 @@
         "delivery": "Delivery address",
         "invoice": "Invoice address"
     },
+    "roundingErrorVAT": "Rounding error VAT",
     "amount": {
         "amount": "Amount",
         "balance": "Balance",
@@ -58,6 +59,7 @@
         "printblank": "Print blank",
         "printout": "Printout",
         "showdiscounts": "Show discounts",
+        "subsetting": "Compress PDF",
         "template": {
             "confirm": "Do you really want to remove the template \"{name}\"?",
             "default": "Set as default",
@@ -164,6 +166,11 @@
             "no": "Reminder no.",
             "number": "Reminder number"
         },
+        "list": {
+            "name": "Payment Statement",
+            "no": "PS no.",
+            "number": "PS number"
+        },
         "invoice": {
             "name": "Invoice",
             "no": "Invoice no.",
@@ -177,7 +184,7 @@
         "pinvoice": {
             "name": "Pro-forma invoice",
             "no": "PI No.",
-            "number": "PI Number"
+            "number": "PI number"
         },
         "quote": {
             "name": "Quote",

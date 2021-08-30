@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ixml SYSTEM "https://developers.zeyos.com/schema/ixml.dtd">
+<ixml
+	xmlns="https://developers.zeyos.com/schema/ixml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://developers.zeyos.com/schema/ixml https://developers.zeyos.com/schema/ixml.xsd">
+
+	<db:select var_result="cfg" type="self">
+		<db:fields>
+			<db:field>defaultsettings</db:field>
+			<db:field>settings</db:field>
+		</db:fields>
+		<db:table>applications</db:table>
+		<db:is field="identifier">zeyos.billing.printouts</db:is>
+	</db:select>
+	<decode:json var="defaultsettings">$cfg.defaultsettings</decode:json>
+	<decode:json var="settings">$cfg.settings</decode:json>
+
+	<include id="zeyos.lib.array" var="libArray"/>
+	<call func="libArray.deepMerge" var="return">
+		<param name="array1" var="defaultsettings"/>
+		<param name="array2" var="settings"/>
+	</call>
+
+</ixml>
